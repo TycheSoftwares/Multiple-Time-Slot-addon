@@ -4,7 +4,7 @@
  Plugin Name: Woocommerce Booking Multiple Time Slot Addon
 Plugin URI: http://www.tychesoftwares.com/store/premium-plugins/bkap-multiple-time-slot-addon
 Description: This addon to the Woocommerce Booking and Appointment Plugin lets you select multiple timeslots on a date for each product on the website.
-Version: 1.0
+Version: 1.1
 Author: Ashok Rane
 Author URI: http://www.tychesoftwares.com/
 */
@@ -15,13 +15,13 @@ $ExampleUpdateChecker = new PluginUpdateChecker(
 		__FILE__
 );*/
 global $MultipleTimeslotUpdateChecker;
-$MultipleTimeslotUpdateChecker = '1.0';
+$MultipleTimeslotUpdateChecker = '1.1';
 
 // this is the URL our updater / license checker pings. This should be the URL of the site with EDD installed
 define( 'EDD_SL_STORE_URL_MULTIPLE_TIMESLOT_BOOK', 'http://www.tychesoftwares.com/' ); // IMPORTANT: change the name of this constant to something unique to prevent conflicts with other plugins using this system
 
 // the name of your product. This is the title of your product in EDD and should match the download title in EDD exactly
-define( 'EDD_SL_ITEM_NAME_MULTIPLE_TIMESLOT_BOOK', 'Woocommerce Multiple Timeslot Addon' ); // IMPORTANT: change the name of this constant to something unique to prevent conflicts with other plugins using this system
+define( 'EDD_SL_ITEM_NAME_MULTIPLE_TIMESLOT_BOOK', 'Multiple Time Slot addon for Woocommerce Booking and Appointment Plugin' ); // IMPORTANT: change the name of this constant to something unique to prevent conflicts with other plugins using this system
 
 if( !class_exists( 'EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater' ) ) {
 	// load our custom updater if it doesn't already exist
@@ -33,7 +33,7 @@ $license_key = trim( get_option( 'edd_sample_license_key_print_ticket_book' ) );
 
 // setup the updater
 $edd_updater = new EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater( EDD_SL_STORE_URL_MULTIPLE_TIMESLOT_BOOK, __FILE__, array(
-		'version' 	=> '1.0', 		// current version number
+		'version' 	=> '1.1', 		// current version number
 		'license' 	=> $license_key, 	// license key (used get_option above to retrieve from DB)
 		'item_name' => EDD_SL_ITEM_NAME_MULTIPLE_TIMESLOT_BOOK, 	// name of this plugin
 		'author' 	=> 'Ashok Rane'  // author of this plugin
@@ -78,14 +78,19 @@ $edd_updater = new EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater( EDD_SL_STORE_URL_M
 				add_filter('bkap_get_cart_item_from_session', array(&$this, 'get_cart_item_from_session'),10,2);
 				add_filter('bkap_timeslot_get_item_data', array(&$this, 'get_item_data'), 10, 2 );
 				add_action('bkap_update_booking_history', array(&$this, 'order_item_meta'), 10,2);
-				add_action('bkap_validate_on_checkout', array(&$this, 'bkap_quantity_check'),10,1);
+				add_action('bkap_validate_cart_items', array(&$this, 'bkap_quantity_check'),10,1);
+				add_filter('bkap_validate_add_to_cart', array(&$this, 'bkap_quantity'),10,2);
 				add_action('bkap_order_status_cancelled', array(&$this, 'bkap_cancel_order'),10,3);
 				add_action('bkap_add_submenu',array(&$this, 'multiple_timeslot_menu'));
 				
-				add_action('admin_init', array(&$this, 'edd_sample_register_option'));
-				add_action('admin_init', array(&$this, 'edd_sample_deactivate_license'));
-				add_action('admin_init', array(&$this, 'edd_sample_activate_license'));
-				require_once( ABSPATH . "wp-includes/pluggable.php" );
+				add_action('admin_init', array(&$this, 'edd_multiple_time_slot_register_option'));
+				add_action('admin_init', array(&$this, 'edd_multiple_time_slot_deactivate_license'));
+				add_action('admin_init', array(&$this, 'edd_multiple_time_slot_activate_license'));
+				//require_once( ABSPATH . "wp-includes/pluggable.php" );
+				add_action('init', array(&$this, 'multiple_time_slot_load_ajax'));
+			}
+			function multiple_time_slot_load_ajax()
+			{
 				if ( !is_user_logged_in() )
 				{
 					add_action('wp_ajax_nopriv_bkap_multiple_time_slot',  array(&$this,'bkap_multiple_time_slot'));
@@ -95,11 +100,10 @@ $edd_updater = new EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater( EDD_SL_STORE_URL_M
 					add_action('wp_ajax_bkap_multiple_time_slot',  array(&$this,'bkap_multiple_time_slot'));
 				}
 			}
-			
-			function edd_sample_activate_license()
+			function edd_multiple_time_slot_activate_license()
 			{
 				// listen for our activate button to be clicked
-				if( isset( $_POST['edd_license_activate'] ) )
+				if( isset( $_POST['edd_multiple_time_slot_license_activate'] ) )
 				{
 					// run a quick security check
 					if( ! check_admin_referer( 'edd_sample_nonce', 'edd_sample_nonce' ) )
@@ -136,10 +140,10 @@ $edd_updater = new EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater( EDD_SL_STORE_URL_M
 			* This will descrease the site count
 			***********************************************/
 			
-			function edd_sample_deactivate_license()
+			function edd_multiple_time_slot_deactivate_license()
 			{
 				// listen for our activate button to be clicked
-				if( isset( $_POST['edd_license_deactivate'] ) )
+				if( isset( $_POST['edd_multiple_time_slot_license_deactivate'] ) )
 				{
 					// run a quick security check
 					if( ! check_admin_referer( 'edd_sample_nonce', 'edd_sample_nonce' ) )
@@ -180,7 +184,7 @@ $edd_updater = new EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater( EDD_SL_STORE_URL_M
 			* want to do something custom
 			*************************************/
 			
-			function edd_sample_check_license()
+			function edd_multiple_time_slot_check_license()
 			{
 				global $wp_version;
 					
@@ -210,10 +214,10 @@ $edd_updater = new EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater( EDD_SL_STORE_URL_M
 				}
 			}
 				
-			function edd_sample_register_option()
+			function edd_multiple_time_slot_register_option()
 			{
 				// creates our settings in the options table
-				register_setting('edd_sample_license', 'edd_sample_license_key_multiple_timeslot_book', array(&$this, 'edd_sanitize_license' ));
+				register_setting('edd_multiple_time_slot_license', 'edd_sample_license_key_multiple_timeslot_book', array(&$this, 'edd_sanitize_license' ));
 			}
 			
 			
@@ -226,7 +230,7 @@ $edd_updater = new EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater( EDD_SL_STORE_URL_M
 				return $new;
 			}
 			
-			function edd_sample_license_page()
+			function edd_multiple_time_slot_license_page()
 			{
 				$license 	= get_option( 'edd_sample_license_key_multiple_timeslot_book' );
 				$status 	= get_option( 'edd_sample_license_status_multiple_timeslot_book' );
@@ -236,7 +240,7 @@ $edd_updater = new EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater( EDD_SL_STORE_URL_M
 														<h2><?php _e('Plugin License Options'); ?></h2>
 														<form method="post" action="options.php">
 														
-															<?php settings_fields('edd_sample_license'); ?>
+															<?php settings_fields('edd_multiple_time_slot_license'); ?>
 															
 															<table class="form-table">
 																<tbody>
@@ -258,10 +262,10 @@ $edd_updater = new EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater( EDD_SL_STORE_URL_M
 																				<?php if( $status !== false && $status == 'valid' ) { ?>
 																					<span style="color:green;"><?php _e('active'); ?></span>
 																					<?php wp_nonce_field( 'edd_sample_nonce', 'edd_sample_nonce' ); ?>
-																					<input type="submit" class="button-secondary" name="edd_license_deactivate" value="<?php _e('Deactivate License'); ?>"/>
+																					<input type="submit" class="button-secondary" name="edd_multiple_time_slot_license_deactivate" value="<?php _e('Deactivate License'); ?>"/>
 																				<?php } else {
 																					wp_nonce_field( 'edd_sample_nonce', 'edd_sample_nonce' ); ?>
-																					<input type="submit" class="button-secondary" name="edd_license_activate" value="<?php _e('Activate License'); ?>"/>
+																					<input type="submit" class="button-secondary" name="edd_multiple_time_slot_license_activate" value="<?php _e('Activate License'); ?>"/>
 																				<?php } ?>
 																			</td>
 																		</tr>
@@ -276,7 +280,7 @@ $edd_updater = new EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater( EDD_SL_STORE_URL_M
 						
 								function multiple_timeslot_menu()
 								{
-									$page = add_submenu_page('booking_settings', __( 'Activate Multiple Timeslot License', 'woocommerce-booking' ), __( 'Activate Multiple Timeslot License', 'woocommerce-booking' ), 'manage_woocommerce', 'multiple_timeslot_license_page', array(&$this, 'edd_sample_license_page' ));
+									$page = add_submenu_page('booking_settings', __( 'Activate Multiple Timeslot License', 'woocommerce-booking' ), __( 'Activate Multiple Timeslot License', 'woocommerce-booking' ), 'manage_woocommerce', 'multiple_timeslot_license_page', array(&$this, 'edd_multiple_time_slot_license_page' ));
 								}
 			
 			function multiple_time_slot_activate()
@@ -361,7 +365,7 @@ $edd_updater = new EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater( EDD_SL_STORE_URL_M
 			
 			function bkap_multiple_time_slot()
 			{
-				global $wpdb;
+				global $wpdb,$woocommerce_booking;
 				$saved_settings = json_decode(get_option('woocommerce_booking_global_settings'));
 				if(isset($saved_settings) && $saved_settings->booking_time_format != '')
 				{
@@ -1419,6 +1423,7 @@ $edd_updater = new EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater( EDD_SL_STORE_URL_M
 				$date_check = date('Y-m-d', strtotime($value['booking'][0]['hidden_date']));
 				$booking_settings = get_post_meta($value['product_id'] , 'woocommerce_booking_settings' , true);
 				$saved_settings = json_decode(get_option('woocommerce_booking_global_settings'));
+				$quantity_check_pass = 'true';
 				if(isset($saved_settings) && $saved_settings->booking_time_format != '')
 				{
 					$time_format = $saved_settings->booking_time_format;
@@ -1443,7 +1448,7 @@ $edd_updater = new EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater( EDD_SL_STORE_URL_M
 								else $to_time = '';
 								if($to_time != '')
 								{
-									$query = "SELECT available_booking, start_date FROM `".$wpdb->prefix."booking_history`
+									$query = "SELECT available_booking, start_date,total_booking FROM `".$wpdb->prefix."booking_history`
 										WHERE post_id = '".$value['product_id']."'
 										AND start_date = '".$date_check."'
 										AND from_time = '".$from_time."'
@@ -1452,54 +1457,181 @@ $edd_updater = new EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater( EDD_SL_STORE_URL_M
 								}
 								else
 								{
-									$query = "SELECT available_booking, start_date FROM `".$wpdb->prefix."booking_history`
+									$query = "SELECT available_booking, start_date, total_booking FROM `".$wpdb->prefix."booking_history`
 										WHERE post_id = '".$value['product_id']."'
 										AND start_date = '".$date_check."'
 										AND from_time = '".$from_time."'";
 									$results = $wpdb->get_results( $query );
 								}
 								if (!$results) break;
-								else
+								else if(count($results) > 0)
 								{
 									$post_title = get_post($value['product_id']);
-										if($value['booking'][0]['time_slot'] != "")
-										{
+									if($value['booking'][0]['time_slot'] != "")
+									{
 										// if current format is 12 hour format, then convert the times to 24 hour format to check in database
-											if ($time_format == '12')
+										if ($time_format == '12')
+										{
+											$from_time = date('h:i A', strtotime($time_explode[0]));
+											if(isset($time_explode[1])) $to_time = date('h:i A', strtotime($time_explode[1]));
+											else $to_time = '';
+											if($to_time != '')
 											{
-												$from_time = date('h:i A', strtotime($time_explode[0]));
-												if(isset($time_explode[1])) $to_time = date('h:i A', strtotime($time_explode[1]));
-												else $to_time = '';
-												if($to_time != '')
-												{
-													$time_slot_to_display = $from_time.' - '.$to_time;
-												}
-												else
-												{
-													$time_slot_to_display = $from_time;
-												}
+												$time_slot_to_display = $from_time.' - '.$to_time;
 											}
-											else if ($time_format == '24')
+											else
 											{
-												$from_time = date('H:i ', strtotime($time_explode[0]));
-												if(isset($time_explode[1])) $to_time = date('H:i ', strtotime($time_explode[1]));
-												else $to_time = '';
-												if($to_time != '')
-												{
-													$time_slot_to_display = $from_time.' - '.$to_time;
-												}
-												else
-												{
-													$time_slot_to_display = $from_time;
-												}
+												$time_slot_to_display = $from_time;
 											}
-											if( $results[0]->available_booking > 0 && $results[0]->available_booking < $value['quantity'] )
+										}
+										else if ($time_format == '24')
+										{
+											$from_time = date('H:i ', strtotime($time_explode[0]));
+											if(isset($time_explode[1])) $to_time = date('H:i ', strtotime($time_explode[1]));
+											else $to_time = '';
+											if($to_time != '')
 											{
-												$woocommerce->add_error( sprintf(__($post_title->post_title.book_t('book.limited-booking-msg1') .$results[0]->available_booking.book_t('book.limited-booking-msg2').$time_slot_to_display.'.', 	'woocommerce')) );
+												$time_slot_to_display = $from_time.' - '.$to_time;
 											}
-											elseif ( $results[0]->available_booking == 0 )
+											else
 											{
-												$woocommerce->add_error( sprintf(__(book_t('book.no-booking-msg1').$post_title->post_title.book_t('book.no-booking-msg2').$time_slot_to_display.book_t('book.no-booking-msg3'), 'woocommerce')) );
+												$time_slot_to_display = $from_time;
+											}
+										}
+										if($results[0]->available_booking > 0 && $results[0]->available_booking < $value['quantity']) 
+										{
+											$message = $post_title->post_title.book_t('book.limited-booking-msg1') .$results[0]->available_booking.book_t('book.limited-booking-msg2').$time_slot_to_display.'.';
+											wc_add_notice( $message, $notice_type = 'error');
+											/*$woocommerce->add_error( sprintf(__($post_title->post_title.book_t('book.limited-booking-msg1') .$bookings_available.book_t('book.limited-booking-msg2').$time_slot_to_display.'.', 	'woocommerce')) );*/
+											$quantity_check_pass = 'false';
+										}
+										elseif ( $results[0]->total_booking > 0 && $results[0]->available_booking  == 0 )
+										{
+											$message = book_t('book.no-booking-msg1').$post_title->post_title.book_t('book.no-booking-msg2').$time_slot_to_display.book_t('book.no-booking-msg3');
+											wc_add_notice( $message, $notice_type = 'error');
+											/*$woocommerce->add_error( sprintf(__(book_t('book.no-booking-msg1').$post_title->post_title.book_t('book.no-booking-msg2').$time_slot_to_display.book_t('book.no-booking-msg3'), 'woocommerce')) );*/
+											$quantity_check_pass = 'false';
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			function bkap_quantity($post,$post_id)
+			{
+				global $woocommerce, $wpdb;
+				$date_check = date('Y-m-d', strtotime($post['wapbk_hidden_date']));
+				$booking_settings = get_post_meta($post_id , 'woocommerce_booking_settings' , true);
+				$saved_settings = json_decode(get_option('woocommerce_booking_global_settings'));
+				$quantity_check_pass = 'true';
+				if(isset($saved_settings) && $saved_settings->booking_time_format != '')
+				{
+					$time_format = $saved_settings->booking_time_format;
+				}
+				else
+				{
+					$time_format = '';
+				}
+				if ($time_format == "" OR $time_format == "NULL") $time_format = "12";
+				if($booking_settings['booking_enable_time'] == 'on')
+				{
+					if($booking_settings['booking_enable_multiple_time'] == 'multiple')
+					{
+						$time_exploded = $post['timeslot'];
+						foreach($time_exploded as $k => $v)
+						{
+							if($v != "")
+							{
+								$time_explode = explode("-",$v);
+								$from_time = date('G:i', strtotime($time_explode[0]));
+								if(isset($time_explode[1])) $to_time = date('G:i', strtotime($time_explode[1]));
+								else $to_time = '';
+								if($to_time != '')
+								{
+									$query = "SELECT available_booking, start_date,total_booking FROM `".$wpdb->prefix."booking_history`
+										WHERE post_id = '".$post_id."'
+										AND start_date = '".$date_check."'
+										AND from_time = '".$from_time."'
+										AND to_time = '".$to_time."' ";
+									$results = $wpdb->get_results( $query );
+								}
+								else
+								{
+									$query = "SELECT available_booking, start_date, total_booking FROM `".$wpdb->prefix."booking_history`
+										WHERE post_id = '".$post_id."'
+										AND start_date = '".$date_check."'
+										AND from_time = '".$from_time."'";
+									$results = $wpdb->get_results( $query );
+								}
+								if (!$results) break;
+								else if(count($results) > 0)
+								{
+									$post_title = get_post($post_id);
+									if($post['timeslot'] != "")
+									{
+										// if current format is 12 hour format, then convert the times to 24 hour format to check in database
+										if ($time_format == '12')
+										{
+											$from_time = date('h:i A', strtotime($time_explode[0]));
+											if(isset($time_explode[1])) $to_time = date('h:i A', strtotime($time_explode[1]));
+											else $to_time = '';
+											if($to_time != '')
+											{
+												$time_slot_to_display = $from_time.' - '.$to_time;
+											}
+											else
+											{
+												$time_slot_to_display = $from_time;
+											}
+										}
+										else if ($time_format == '24')
+										{
+											$from_time = date('H:i ', strtotime($time_explode[0]));
+											if(isset($time_explode[1])) $to_time = date('H:i ', strtotime($time_explode[1]));
+											else $to_time = '';
+											if($to_time != '')
+											{
+												$time_slot_to_display = $from_time.' - '.$to_time;
+											}
+											else
+											{
+												$time_slot_to_display = $from_time;
+											}
+										}
+										if( $results[0]->available_booking > 0 && $results[0]->available_booking < $post['quantity'])
+										{
+											$message = $post_title->post_title.book_t('book.limited-booking-msg1') .$results[0]->available_booking.book_t('book.limited-booking-msg2').$time_slot_to_display.'.';
+											wc_add_notice( $message, $notice_type = 'error');
+											$quantity_check_pass = 'false';
+										}
+										elseif ( $results[0]->total_booking > 0 && $results[0]->available_booking == 0 )
+										{
+											$message = book_t('book.no-booking-msg1').$post_title->post_title.book_t('book.no-booking-msg2').$time_slot_to_display.book_t('book.no-booking-msg3');
+											wc_add_notice( $message, $notice_type = 'error');
+											/*$woocommerce->add_error( sprintf(__(book_t('book.no-booking-msg1').$post_title->post_title.book_t('book.no-booking-msg2').$time_slot_to_display.book_t('book.no-booking-msg3'), 'woocommerce')) );*/
+											$quantity_check_pass = 'false';
+										}
+										if ($quantity_check_pass == "true")
+										{
+											foreach ( $woocommerce->cart->get_cart() as $cart_item_key => $values )
+											{
+												$booking = $values['booking'];
+												$quantity = $values['quantity'];
+												$product_id = $values['product_id'];
+												//print_r($values);exit;
+												if ($product_id == $post_id && $booking[0]['wapbk_hidden_date'] == $post['wapbk_hidden_date'] && $booking[0]['time_slot'] == $post['time_slot'])
+												{
+													$total_quantity = $post['quantity'] + $quantity;
+													//echo $total_quantity;exit;
+													if ($results[0]->available_booking > 0 && $results[0]->available_booking < $post['quantity'])
+													{
+														$message = $post_title->post_title.book_t('book.limited-booking-msg1') .$results[0]->available_booking.book_t('book.limited-booking-msg2').$time_slot_to_display.'.';
+														wc_add_notice( $message, $notice_type = 'error');
+														$quantity_check_pass = 'false';
+													}
+												}
 											}
 										}
 									}
@@ -1508,6 +1640,8 @@ $edd_updater = new EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater( EDD_SL_STORE_URL_M
 						}
 					}
 				}
+				return $quantity_check_pass;
+			}
 				function bkap_cancel_order($order_id,$item_value,$booking_id)
 				{
 					global $wpdb;
