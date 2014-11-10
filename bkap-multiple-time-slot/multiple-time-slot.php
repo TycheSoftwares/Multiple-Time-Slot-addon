@@ -950,7 +950,7 @@ $edd_updater = new EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater( EDD_SL_STORE_URL_M
 					}
 					else
 					{
-						if(!isset($booking_settings['booking_seasonal_pricing_enable']))
+						if(isset($booking_settings['booking_seasonal_pricing_enable']) && $booking_settings['booking_seasonal_pricing_enable'] != "yes")
 						{
 							$cart_item = $this->add_cart_item( $cart_item );
 						}
