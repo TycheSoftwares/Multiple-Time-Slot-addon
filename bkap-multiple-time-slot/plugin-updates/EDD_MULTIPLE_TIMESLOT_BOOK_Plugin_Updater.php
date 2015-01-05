@@ -7,12 +7,12 @@
  * Allows plugins to use their own update API.
  *
  * @author Ashok Rane
- * @version 1.0
+ * @version 1.1
  */
 class EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater {
 	private $api_url  = 'http://www.tychesoftwares.com/';
 	private $api_data = array();
-	private $name     = 'Multiple Time Slot addon for Woocommerce Booking and Appointment Plugin';
+	private $name     = 'Woocommerce Multiple Timeslot Addon';
 	private $slug     = 'printable_ticket';
 
 	/**
