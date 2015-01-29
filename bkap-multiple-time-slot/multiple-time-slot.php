@@ -1024,18 +1024,18 @@ function is_bkap_multi_time_active() {
 			/**************************************************************
 			 * Quantity check on the product page
 			 *************************************************************/
-			function multiple_time_quantity_prod($_POST,$post_id) {
+			function multiple_time_quantity_prod($POST,$post_id) {
 				global $woocommerce,$wpdb;
-				$date_check = date('Y-m-d', strtotime($_POST['wapbk_hidden_date']));
+				$date_check = date('Y-m-d', strtotime($POST['wapbk_hidden_date']));
 				
-				if (isset($_POST['quantity'])) {
-					$item_quantity = $_POST['quantity'];
+				if (isset($POST['quantity'])) {
+					$item_quantity = $POST['quantity'];
 				}
 				else {
 					$item_quantity = 1;
 				}
 				$time_slot_str = '';
-				foreach ($_POST['time_slot'] as $k => $v) {
+				foreach ($POST['time_slot'] as $k => $v) {
 					$time_slot_str .= $v . "<br>"; 
 				}
 				//check if the same product has been added to the cart for the same dates
@@ -1052,7 +1052,7 @@ function is_bkap_multi_time_active() {
 						}
 					} 
 					
-					if ($product_id == $post_id && $booking[0]['hidden_date'] == $_POST['wapbk_hidden_date'] && $prod_time_slot_str == $time_slot_str) {
+					if ($product_id == $post_id && $booking[0]['hidden_date'] == $POST['wapbk_hidden_date'] && $prod_time_slot_str == $time_slot_str) {
 						$item_quantity += $quantity;
 					}
 				}
