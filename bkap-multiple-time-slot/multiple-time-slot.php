@@ -3,13 +3,13 @@
  Plugin Name: Woocommerce Booking Multiple Time Slot Addon
 Plugin URI: http://www.tychesoftwares.com/store/premium-plugins/bkap-multiple-time-slot-addon
 Description: This addon to the Woocommerce Booking and Appointment Plugin lets you select multiple timeslots on a date for each product on the website.
-Version: 1.1
+Version: 1.2
 Author: Ashok Rane
 Author URI: http://www.tychesoftwares.com/
 */
 
 global $MultipleTimeslotUpdateChecker;
-$MultipleTimeslotUpdateChecker = '1.1';
+$MultipleTimeslotUpdateChecker = '1.2';
 
 // this is the URL our updater / license checker pings. This should be the URL of the site with EDD installed
 define( 'EDD_SL_STORE_URL_MULTIPLE_TIMESLOT_BOOK', 'http://www.tychesoftwares.com/' ); // IMPORTANT: change the name of this constant to something unique to prevent conflicts with other plugins using this system
@@ -27,7 +27,7 @@ $license_key = trim( get_option( 'edd_sample_license_key_print_ticket_book' ) );
 
 // setup the updater
 $edd_updater = new EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater( EDD_SL_STORE_URL_MULTIPLE_TIMESLOT_BOOK, __FILE__, array(
-		'version' 	=> '1.1', 		// current version number
+		'version' 	=> '1.2', 		// current version number
 		'license' 	=> $license_key, 	// license key (used get_option above to retrieve from DB)
 		'item_name' => EDD_SL_ITEM_NAME_MULTIPLE_TIMESLOT_BOOK, 	// name of this plugin
 		'author' 	=> 'Ashok Rane'  // author of this plugin
@@ -78,9 +78,7 @@ function is_bkap_multi_time_active() {
 				add_filter('bkap_addon_add_cart_item_data', array(&$this, 'multiple_time_add_cart_item_data'), 15, 3);
 				add_filter('bkap_get_cart_item_from_session', array(&$this, 'multiple_time_get_cart_item_from_session'),10,2);
 				add_filter('bkap_get_item_data', array(&$this, 'multiple_time_get_item_data'), 10, 2 );
-			//	add_action('bkap_update_booking_history', array(&$this, 'multiple_time_order_item_meta'), 10,2);
 				add_action('bkap_update_booking_history', array(&$this, 'multiple_time_order_item_meta'), 50,2);
-			//	add_action('bkap_validate_on_checkout', array(&$this, 'bkap_quantity_check'),10,1);
 				// Validate on cart and checkout page
 				add_action('bkap_validate_cart_items', array(&$this, 'multiple_time_quantity_check'),10,1);
 				// Validation on the product page
@@ -321,7 +319,7 @@ function is_bkap_multi_time_active() {
 				?>			
 				<tr id="booking_time_slot" style="display:<?=$booking_time_slot_selection?>;">
 					<th>
-						<label for="booking_time_slot_label"><b><?php _e( 'Time Slot Selection:', 'woocommerce-booking');?></b></label>
+						<label for="booking_time_slot_label"><?php _e( 'Time Slot Selection:', 'woocommerce-booking');?></label>
 					</th>
 					<td>
 						<?php 
@@ -331,9 +329,9 @@ function is_bkap_multi_time_active() {
 							$enabled_time = "";
 						}
 						?>
-						<input type="radio" name="booking_enable_time_radio" id="booking_enable_time_radio" value="single" <?php echo $enabled_time = "checked";?>><b><?php _e('Single&nbsp&nbsp&nbsp&nbsp&nbsp;', 'woocommerce-booking');?> </b></input>
-						<input type="radio" id="booking_enable_time_radio" name="booking_enable_time_radio" value="multiple"<?php echo $enable_time;?>><b><?php _e('Multiple', 'woocommerce-booking');?> </b></input>
-						<img class="help_tip" width="16" height="16" data-tip="<?php _e('Enable Single to select single timeslot on product page or Enable Multiple to select multiple timeslots on product page.', 'woocommerce-booking');?>" src="<?php echo plugins_url() ;?>/woocommerce/assets/images/help.png"/>
+						<input type="radio" name="booking_enable_time_radio" id="booking_enable_time_radio" value="single" <?php echo $enabled_time = "checked";?>><?php _e('Single&nbsp&nbsp&nbsp&nbsp&nbsp;', 'woocommerce-booking');?> </input>
+						<input type="radio" id="booking_enable_time_radio" name="booking_enable_time_radio" value="multiple"<?php echo $enable_time;?>><?php _e('Multiple', 'woocommerce-booking');?> </input>
+						<img class="help_tip" width="16" height="16" style="margin-left:257px;" data-tip="<?php _e('Enable Single to select single timeslot on product page or Enable Multiple to select multiple timeslots on product page.', 'woocommerce-booking');?>" src="<?php echo plugins_url() ;?>/woocommerce/assets/images/help.png"/>
 					</td>
 				</tr>
 				<script type="text/javascript">
@@ -509,14 +507,14 @@ function is_bkap_multi_time_active() {
 				$price = "";
 				$product = get_product($product_id);
 				$product_type = $product->product_type;
-	
-				if (isset($_POST['price']) && $_POST['price'] != 0) {
-					$price = $_POST['price'];
-				}
-				else {
-					$price = bkap_common::bkap_get_price($product_id, $variation_id, $product_type);
-				}
 				if(isset($booking_settings['booking_enable_time']) && $booking_settings['booking_enable_time'] == 'on') {
+					if (isset($_POST['price']) && $_POST['price'] != 0) {
+						$price = $_POST['price'];
+					}
+					else {
+						$price = bkap_common::bkap_get_price($product_id, $variation_id, $product_type);
+					}
+				
 					if(isset($booking_settings['booking_enable_multiple_time']) && $booking_settings['booking_enable_multiple_time'] == 'multiple') {
 						$time_multiple_disp = $_POST['time_slot'];
 						$i = 0;
@@ -527,20 +525,20 @@ function is_bkap_multi_time_active() {
 						$price = $price * $i;
 						$cart_arr['time_slot'] = $time_slots;
 					}	
-				}
 				
-				//Round the price if needed
-				$round_price = $price;
-				$global_settings = json_decode(get_option('woocommerce_booking_global_settings'));
-				if (isset($global_settings->enable_rounding) && $global_settings->enable_rounding == "on")
-					$round_price = round($price);
-				$price = $round_price;
-				
-				if (function_exists('is_bkap_deposits_active') && is_bkap_deposits_active()) {
-					$_POST['price'] = $price;
-				}
-				else {
-					$cart_arr ['price'] = $price;
+					//Round the price if needed
+					$round_price = $price;
+					$global_settings = json_decode(get_option('woocommerce_booking_global_settings'));
+					if (isset($global_settings->enable_rounding) && $global_settings->enable_rounding == "on")
+						$round_price = round($price);
+					$price = $round_price;
+					
+					if (function_exists('is_bkap_deposits_active') && is_bkap_deposits_active()) {
+						$_POST['price'] = $price;
+					}
+					else {
+						$cart_arr ['price'] = $price;
+					}
 				}
 				return $cart_arr;
 			}
