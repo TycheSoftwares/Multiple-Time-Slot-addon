@@ -1041,15 +1041,16 @@ function is_bkap_multi_time_active() {
 					$booking = $values['booking'];
 					$quantity = $values['quantity'];
 					$product_id = $values['product_id'];
-					
-					$prod_time_slot = explode("<br>",$booking[0]['time_slot']); 	
-					$prod_time_slot_str = '';
-					foreach ($prod_time_slot as $k => $v) {
-						if ($v != "") {
-							$prod_time_slot_str .= $v . "<br>";
-						}
-					} 
-					
+					$prod_time_slot_str = "";
+					if (isset($booking[0]['time_slot'])) {
+						$prod_time_slot = explode("<br>",$booking[0]['time_slot']); 	
+						$prod_time_slot_str = '';
+						foreach ($prod_time_slot as $k => $v) {
+							if ($v != "") {
+								$prod_time_slot_str .= $v . "<br>";
+							}
+						} 
+					}
 					if ($product_id == $post_id && $booking[0]['hidden_date'] == $POST['wapbk_hidden_date'] && $prod_time_slot_str == $time_slot_str) {
 						$item_quantity += $quantity;
 					}
