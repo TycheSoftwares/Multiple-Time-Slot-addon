@@ -4,7 +4,7 @@
 Plugin URI: http://www.tychesoftwares.com/store/premium-plugins/bkap-multiple-time-slot-addon
 Description: This addon to the Woocommerce Booking and Appointment Plugin lets you select multiple timeslots on a date for each product on the website.
 Version: 1.2
-Author: Ashok Rane
+Author: Tyche Softwares
 Author URI: http://www.tychesoftwares.com/
 */
 
