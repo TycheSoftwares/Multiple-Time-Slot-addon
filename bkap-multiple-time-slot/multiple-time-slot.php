@@ -698,7 +698,7 @@ function is_bkap_multi_time_active() {
 										start_date = '".$date_query."' AND
 										from_time = '".$query_from_time."' AND
 										to_time = '".$query_to_time."' ";
-									mysql_query( $query );
+									$wpdb->query( $query );
 									$order_select_query = "SELECT * FROM `".$wpdb->prefix."booking_history`
 											WHERE post_id = '".$product_id."' AND
 											start_date = '".$date_query."' AND
@@ -715,7 +715,7 @@ function is_bkap_multi_time_active() {
 										WHERE post_id = '".$product_id."' AND
 										start_date = '".$date_query."' AND
 										from_time = '".$query_from_time."'";
-									mysql_query( $query );
+									$wpdb->query( $query );
 									$order_select_query = "SELECT * FROM `".$wpdb->prefix."booking_history`
 											WHERE post_id = '".$product_id."' AND
 											start_date = '".$date_query."' AND
@@ -734,7 +734,7 @@ function is_bkap_multi_time_active() {
 										VALUES (
 										'".$order_id."',
 										'".$booking_id."' )";
-									mysql_query( $order_query );
+									$wpdb->query( $order_query );
 									$i++;	
 								}
 							}
@@ -1108,7 +1108,7 @@ function is_bkap_multi_time_active() {
 											post_id = '".$product_id."'";
 											
 								}
-								mysql_query( $query );
+								$wpdb->query( $query );
 							}
 							$j++;
 						}	
