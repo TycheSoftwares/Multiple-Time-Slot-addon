@@ -370,7 +370,11 @@ function is_bkap_multi_time_active() {
 					}
 					else {
 						$currency_symbol = get_woocommerce_currency_symbol();
-						$show_price = 'show';
+						if(has_filter('bkap_show_addon_price')) {
+						    $show_price = apply_filters('bkap_show_addon_price','');
+						} else {
+						    $show_price = 'show';
+						}
 						print('<div id="show_addon_price" name="show_addon_price" class="show_addon_price" style="display:'.$show_price.';">'.$currency_symbol.' 0</div>');
 					} 
 				endif;
