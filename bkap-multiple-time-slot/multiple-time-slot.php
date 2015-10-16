@@ -960,7 +960,7 @@ function is_bkap_multi_time_active() {
 									$to_time = '';
 								}
 								if($to_time != '') {
-									$query = "SELECT available_booking, start_date FROM `".$wpdb->prefix."booking_history`
+									$query = "SELECT total_booking, available_booking, start_date FROM `".$wpdb->prefix."booking_history`
 												WHERE post_id = '".$product_id."'
 												AND start_date = '".$booking_date."'
 												AND from_time = '".$from_time."'
@@ -968,7 +968,7 @@ function is_bkap_multi_time_active() {
 									$results = $wpdb->get_results( $query );
 								}
 								else {
-									$query = "SELECT available_booking, start_date FROM `".$wpdb->prefix."booking_history`
+									$query = "SELECT total_booking, available_booking, start_date FROM `".$wpdb->prefix."booking_history`
 												WHERE post_id = '".$product_id."'
 												AND start_date = '".$booking_date."'
 												AND from_time = '".$from_time."'";
@@ -1014,7 +1014,7 @@ function is_bkap_multi_time_active() {
 											wc_add_notice( $message, $notice_type = 'error');
 											$quantity_check_pass = 'no';
 										}
-										elseif ( $results[0]->available_booking == 0 ) {
+										elseif ( $results[0]->total_booking > 0 && $results[0]->available_booking == 0 ) {
 											$message = bkap_get_book_t('book.no-booking-msg1').$post_title->post_title.bkap_get_book_t('book.no-booking-msg2').$time_slot_to_display.bkap_get_book_t('book.no-booking-msg3');
 											wc_add_notice( $message, $notice_type = 'error');
 											$quantity_check_pass = 'no';
