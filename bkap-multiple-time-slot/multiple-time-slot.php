@@ -424,6 +424,11 @@ function is_bkap_multi_time_active() {
 					$_POST['price'] = $price;
 				}
 				else {
+					if ( function_exists('icl_object_id') ) {
+						$price = apply_filters( 'wcml_formatted_price', $price);
+					} else {
+						$price = wc_price( $price );
+					}
 					echo $price;
 					die();
 				}	
