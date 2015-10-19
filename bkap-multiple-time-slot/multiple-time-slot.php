@@ -1088,7 +1088,6 @@ function is_bkap_multi_time_active() {
 					if($booking_settings['booking_enable_multiple_time'] == 'multiple') {
 						$select_data_query = "SELECT * FROM `".$wpdb->prefix."booking_history`
 											WHERE id='".$booking_id."'";
-											echo $select_data_query;
 						$results_data = $wpdb->get_results ( $select_data_query );
 						$j=0;
 						foreach($results_data as $k => $v) {
