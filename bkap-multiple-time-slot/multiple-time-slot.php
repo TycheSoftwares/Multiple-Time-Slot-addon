@@ -70,6 +70,7 @@ function is_bkap_multi_time_active() {
 				);
 				// Initialize settings
 				register_activation_hook( __FILE__, array(&$this, 'multiple_time_slot_activate'));
+				add_action( 'admin_notices', array( &$this, 'multiple_time_slot_error_notice' ) );
 				// used to add new settings on the product page booking box
 				add_action('bkap_after_time_enabled', array(&$this, 'show_field_settings'));
 				add_filter('bkap_save_product_settings', array(&$this, 'product_settings_save'), 10, 2);
@@ -97,6 +98,12 @@ function is_bkap_multi_time_active() {
 				add_action('admin_init', array(&$this, 'edd_sample_deactivate_license_multiple_timeslot'));
 				add_action('admin_init', array(&$this, 'edd_sample_activate_license_multiple_timeslot'));
 	
+			}
+			
+			function multiple_time_slot_error_notice() {
+			    if ( !is_plugin_active( 'woocommerce-booking/woocommerce-booking.php' ) ) {
+			        echo "<div class=\"error\"><p>Woocommerce Booking Multiple Time Slot Addon is enabled but not effective. It requires WooCommerce Booking and Appointment plugin in order to work.</p></div>";
+			    }
 			}
 			
 			function multiple_time_load_ajax() {
