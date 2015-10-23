@@ -12,8 +12,8 @@
 class EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater {
 	private $api_url  = 'http://www.tychesoftwares.com/';
 	private $api_data = array();
-	private $name     = 'Woocommerce Multiple Timeslot Addon';
-	private $slug     = 'printable_ticket';
+	private $name     = 'Multiple Time Slot addon for WooCommerce Booking and Appointment Plugin';
+	private $slug     = 'multiple_timeslot';
 
 	/**
 	 * Class constructor.

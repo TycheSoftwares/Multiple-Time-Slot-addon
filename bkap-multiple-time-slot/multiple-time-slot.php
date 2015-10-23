@@ -23,7 +23,7 @@ if( !class_exists( 'EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater' ) ) {
 }
 
 // retrieve our license key from the DB
-$license_key = trim( get_option( 'edd_sample_license_key_print_ticket_book' ) );
+$license_key = trim( get_option( 'edd_sample_license_key_multiple_timeslot_book' ) );
 
 // setup the updater
 $edd_updater = new EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater( EDD_SL_STORE_URL_MULTIPLE_TIMESLOT_BOOK, __FILE__, array(
