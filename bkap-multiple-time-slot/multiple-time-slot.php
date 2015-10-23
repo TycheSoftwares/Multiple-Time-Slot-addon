@@ -713,13 +713,15 @@ function is_bkap_multi_time_active() {
 										WHERE post_id = '".$product_id."' AND
 										start_date = '".$date_query."' AND
 										from_time = '".$query_from_time."' AND
-										to_time = '".$query_to_time."' ";
+										to_time = '".$query_to_time."' AND
+										total_booking > 0";
 									$wpdb->query( $query );
 									$order_select_query = "SELECT * FROM `".$wpdb->prefix."booking_history`
 											WHERE post_id = '".$product_id."' AND
 											start_date = '".$date_query."' AND
 											from_time = '".$query_from_time."' AND
-											to_time = '".$query_to_time."' ";
+											to_time = '".$query_to_time."' AND
+											status = ''";
 									$order_results = $wpdb->get_results( $order_select_query );
 									foreach($order_results as $k => $v) {
 										$details[$product_id][] = $v;
@@ -730,12 +732,14 @@ function is_bkap_multi_time_active() {
 										SET available_booking = available_booking - ".$quantity."
 										WHERE post_id = '".$product_id."' AND
 										start_date = '".$date_query."' AND
-										from_time = '".$query_from_time."'";
+										from_time = '".$query_from_time."' AND
+										total_booking > 0";
 									$wpdb->query( $query );
 									$order_select_query = "SELECT * FROM `".$wpdb->prefix."booking_history`
 											WHERE post_id = '".$product_id."' AND
 											start_date = '".$date_query."' AND
-											from_time = '".$query_from_time."'";
+											from_time = '".$query_from_time."' AND
+											status = ''";
 									$order_results = $wpdb->get_results( $order_select_query );
 									foreach($order_results as $k => $v) {
 										$details[$product_id][] = $v;
