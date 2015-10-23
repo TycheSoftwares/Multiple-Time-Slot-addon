@@ -102,7 +102,7 @@ function is_bkap_multi_time_active() {
 			
 			function multiple_time_slot_error_notice() {
 			    if ( !is_plugin_active( 'woocommerce-booking/woocommerce-booking.php' ) ) {
-			        echo "<div class=\"error\"><p>Woocommerce Booking Multiple Time Slot Addon is enabled but not effective. It requires WooCommerce Booking and Appointment plugin in order to work.</p></div>";
+			        echo "<div class=\"error\"><p>Multiple Time Slot Addon is enabled but not effective. It requires WooCommerce Booking and Appointment plugin in order to work.</p></div>";
 			    }
 			}
 			
