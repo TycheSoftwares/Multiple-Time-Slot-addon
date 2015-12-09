@@ -77,7 +77,6 @@ function is_bkap_multi_time_active() {
 				add_filter('bkap_function_slot', array(&$this, 'slot_function'),10,1);
 				add_filter('bkap_slot_type', array(&$this, 'slot_type'),10,1);
 				add_filter('bkap_addon_add_cart_item_data', array(&$this, 'multiple_time_add_cart_item_data'), 15, 3);
-				add_filter('bkap_get_cart_item_from_session', array(&$this, 'multiple_time_get_cart_item_from_session'),10,2);
 				add_filter('bkap_get_item_data', array(&$this, 'multiple_time_get_item_data'), 10, 2 );
 				add_action('bkap_update_booking_history', array(&$this, 'multiple_time_order_item_meta'), 50,2);
 				// Validate on cart and checkout page
@@ -431,12 +430,23 @@ function is_bkap_multi_time_active() {
 					$_POST['price'] = $price;
 				}
 				else {
+				    // Save the actual Bookable amount, as a raw amount
+				    // If Multi currency is enabled, convert the amount before saving it
+				    $total_price = $price;
+				    if ( function_exists( 'icl_object_id' ) ) {
+				        $total_price = apply_filters( 'wcml_raw_price_amount', $price );
+				    }
+				    print( 'jQuery( "#total_price_calculated" ).val(' . $total_price . ');' );
+				    // save the price in a hidden field to be used later
+				    print( 'jQuery( "#bkap_price_charged" ).val(' . $total_price . ');' );
+				    
 					if ( function_exists('icl_object_id') ) {
 						$price = apply_filters( 'wcml_formatted_price', $price);
 					} else {
 						$price = wc_price( $price );
 					}
-					echo $price;
+					// display the price on the front end product page
+					print( 'jQuery( "#show_addon_price" ).html( "' . addslashes( $price ) . '");' );
 					die();
 				}	
 			}
@@ -520,17 +530,9 @@ function is_bkap_multi_time_active() {
 			function multiple_time_add_cart_item_data($cart_arr, $product_id, $variation_id) {
 				$booking_settings = get_post_meta($product_id, 'woocommerce_booking_settings', true);
 				$time_slots = "";
-				$price = "";
 				$product = get_product($product_id);
 				$product_type = $product->product_type;
 				if(isset($booking_settings['booking_enable_time']) && $booking_settings['booking_enable_time'] == 'on') {
-					if (isset($_POST['price']) && $_POST['price'] != 0) {
-						$price = $_POST['price'];
-					}
-					else {
-						$price = bkap_common::bkap_get_price($product_id, $variation_id, $product_type);
-					}
-				
 					if(isset($booking_settings['booking_enable_multiple_time']) && $booking_settings['booking_enable_multiple_time'] == 'multiple') {
 						$time_multiple_disp = $_POST['time_slot'];
 						$i = 0;
@@ -538,39 +540,12 @@ function is_bkap_multi_time_active() {
 							$time_slots .= "<br>".$v;
 							$i++;
 						}
-						$price = $price * $i;
 						$cart_arr['time_slot'] = $time_slots;
 					}	
-				
-					//Round the price if needed
-					$round_price = $price;
-					$global_settings = json_decode(get_option('woocommerce_booking_global_settings'));
-					if (isset($global_settings->enable_rounding) && $global_settings->enable_rounding == "on")
-						$round_price = round($price);
-					$price = $round_price;
-					
-					if (function_exists('is_bkap_deposits_active') && is_bkap_deposits_active()) {
-						$_POST['price'] = $price;
-					}
-					else {
-						$cart_arr ['price'] = $price;
-					}
 				}
 				return $cart_arr;
 			}
-			/**********************************************************
-			 * Cart in session
-			 *********************************************************/
-			function multiple_time_get_cart_item_from_session( $cart_item, $values ) {
-				if (isset($values['booking'])) :
-					$cart_item['booking'] = $values['booking'];
-					$booking_settings = get_post_meta($cart_item['product_id'], 'woocommerce_booking_settings', true);
-					if (isset($booking_settings['booking_enable_multiple_time']) && $booking_settings['booking_enable_multiple_time'] == 'multiple') {
-						$cart_item = $this->add_cart_item( $cart_item );
-					}
-				endif;
-				return $cart_item;
-			}
+			
 			/***********************************************************
 			 * Add the multiple time slots on the cart and checkout page
 			 **********************************************************/
@@ -660,16 +635,26 @@ function is_bkap_multi_time_active() {
 				}
 				$date = '';
 				$time_slot_to_display = '';
+				// This variable contains all the time slots in the G:i format to be saved in the hidden field in the item meta table
+				$meta_data_format = '';
+				
 				$order_item_id = $order->order_item_id;
 				$order_id = $order->order_id;
 				if(isset($booking_settings['booking_enable_time']) && $booking_settings['booking_enable_time'] == 'on') {
 					if(isset($booking_settings['booking_enable_multiple_time']) && $booking_settings['booking_enable_multiple_time'] == 'multiple') {
-						if ($booking[0]['date'] != "") {
+					    if ( array_key_exists( 'date', $booking[0] ) && $booking[0][ 'date' ] != "" ) {
 							$date = $booking[0]['date'];
 							//echo $date;
 							$name = get_option('book.item-meta-date');
-							woocommerce_add_order_item_meta( $order_item_id, $name, sanitize_text_field( $date , true ) );
+							wc_add_order_item_meta( $order_item_id, $name, sanitize_text_field( $date , true ) );
 						}
+						
+						if ( array_key_exists( 'hidden_date', $booking[0] ) && $booking[0]['hidden_date'] != "" ) {
+						    // save the date in Y-m-d format
+						    $date_booking = date( 'Y-m-d', strtotime( $booking[0]['hidden_date'] ) );
+						    wc_add_order_item_meta( $order_item_id, '_wapbk_booking_date', sanitize_text_field( $date_booking, true ) );
+						}
+						
 						if($booking[0]['time_slot'] != "") {
 							$time_slot = $booking[0]['time_slot'];
 							$hidden_date = $booking[0]['hidden_date'];
@@ -704,9 +689,15 @@ function is_bkap_multi_time_active() {
 								$date_query = date('Y-m-d',strtotime($booking[0]['hidden_date']));
 								//echo $date_query;exit;
 								$query_from_time = date('G:i', strtotime($time_explode[0]));
+								$meta_data_format .=   $query_from_time;
+								
 								if (isset($time_explode[1])) {
 									$query_to_time = date('G:i', strtotime($time_explode[1]));
+									$meta_data_format .= ' - ' . $query_to_time . ',';
+								} else {
+								    $meta_data_format .= ',';
 								}
+								
 								if($query_to_time != '') {
 									$query = "UPDATE `".$wpdb->prefix."booking_history`
 										SET available_booking = available_booking - ".$quantity."
@@ -759,7 +750,9 @@ function is_bkap_multi_time_active() {
 								}
 							}
 							$time_slot_to_display = trim($time_slot_to_display, ",");
-							woocommerce_add_order_item_meta( $order_item_id, get_option('book.item-meta-time'), $time_slot_to_display, true );
+							$meta_data_format = trim( $meta_data_format, ',' );
+							wc_add_order_item_meta( $order_item_id, get_option('book.item-meta-time'), $time_slot_to_display, true );
+							wc_add_order_item_meta( $order_item_id,  '_wapbk_time_slot', $meta_data_format, true );
 						}
 						$book_global_settings = json_decode(get_option('woocommerce_booking_global_settings'));
 						$booking_settings = get_post_meta($product_id, 'woocommerce_booking_settings' , true);
