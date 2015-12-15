@@ -440,13 +440,17 @@ function is_bkap_multi_time_active() {
 				    // save the price in a hidden field to be used later
 				    print( 'jQuery( "#bkap_price_charged" ).val(' . $total_price . ');' );
 				    
+				    // format the price
+				    $formatted_price = wc_price( $price );
 					if ( function_exists('icl_object_id') ) {
-						$price = apply_filters( 'wcml_formatted_price', $price);
-					} else {
-						$price = wc_price( $price );
-					}
+					    global $woocommerce_wpml;
+					    // Multi currency is enabled
+					    if ( isset( $woocommerce_wpml->settings[ 'enable_multi_currency' ] ) && $woocommerce_wpml->settings[ 'enable_multi_currency' ] == '2' ) {
+				        	$formatted_price = apply_filters( 'wcml_formatted_price', $price);
+					    }
+					} 
 					// display the price on the front end product page
-					print( 'jQuery( "#show_addon_price" ).html( "' . addslashes( $price ) . '");' );
+					print( 'jQuery( "#show_addon_price" ).html( "' . addslashes( $formatted_price ) . '");' );
 					die();
 				}	
 			}
