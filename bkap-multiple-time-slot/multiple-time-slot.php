@@ -514,9 +514,9 @@ function is_bkap_multi_time_active() {
 				$product_type = bkap_common::bkap_get_product_type($cart_item['product_id']);
 				$price = bkap_common::bkap_get_price($cart_item['product_id'],$cart_item['variation_id'],$product_type);
 				// Adjust price if addons are set
-				if (isset($cart_item['booking'])) :
+				if (isset($cart_item['bkap_booking'])) :
 					$extra_cost = 0;
-					foreach ($cart_item['booking'] as $addon) :
+					foreach ($cart_item['bkap_booking'] as $addon) :
 						if (isset($addon['price']) && $addon['price']>0) $extra_cost += $addon['price'];
 					endforeach;
 				
@@ -554,8 +554,8 @@ function is_bkap_multi_time_active() {
 			 * Add the multiple time slots on the cart and checkout page
 			 **********************************************************/
 			function multiple_time_get_item_data( $other_data, $cart_item ) {
-				if (isset($cart_item['booking'])) :
-					foreach ($cart_item['booking'] as $booking) :
+				if (isset($cart_item['bkap_booking'])) :
+					foreach ($cart_item['bkap_booking'] as $booking) :
 						$booking_settings = get_post_meta($cart_item['product_id'], 'woocommerce_booking_settings', true);	
 						$saved_settings = json_decode(get_option('woocommerce_booking_global_settings'));
 						if(isset($saved_settings) && $saved_settings->booking_time_format != '') {
@@ -625,7 +625,7 @@ function is_bkap_multi_time_active() {
 				//print_r($values);exit;
 				$product_id = $values['product_id'];
 				$quantity = $values['quantity'];
-				$booking = $values['booking'];
+				$booking = $values['bkap_booking'];
 				$booking_settings = get_post_meta($product_id,'woocommerce_booking_settings',true);
 				$saved_settings = json_decode(get_option('woocommerce_booking_global_settings'));
 				if(isset($saved_settings) && $saved_settings->booking_time_format != '') {
@@ -1055,7 +1055,7 @@ function is_bkap_multi_time_active() {
 				}
 				//check if the same product has been added to the cart for the same dates
 				foreach ( $woocommerce->cart->get_cart() as $cart_item_key => $values ) {
-					$booking = $values['booking'];
+					$booking = $values['bkap_booking'];
 					$quantity = $values['quantity'];
 					$product_id = $values['product_id'];
 					$prod_time_slot_str = "";
@@ -1079,9 +1079,9 @@ function is_bkap_multi_time_active() {
 			 * Quantity check on the cart and checkout page
 			 ************************************************************/
 			function multiple_time_quantity_check($value) {
-				$date_check = date('Y-m-d', strtotime($value['booking'][0]['hidden_date']));
+				$date_check = date('Y-m-d', strtotime($value['bkap_booking'][0]['hidden_date']));
 				
-				$quantity_check_pass = multiple_time_slot::multiple_time_slot_quantity_check($value['product_id'],$date_check,$value['booking'][0]['time_slot'],$value['quantity']);
+				$quantity_check_pass = multiple_time_slot::multiple_time_slot_quantity_check($value['product_id'],$date_check,$value['bkap_booking'][0]['time_slot'],$value['quantity']);
 				
 			}
 			/*****************************************************
