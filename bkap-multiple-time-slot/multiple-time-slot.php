@@ -85,8 +85,6 @@ function is_bkap_multi_time_active() {
 				add_action('bkap_validate_add_to_cart',array(&$this,'multiple_time_quantity_prod'),10,2);
 				add_action('bkap_order_status_cancelled', array(&$this, 'bkap_cancel_order'),10,3);
 				add_action('bkap_add_submenu',array(&$this, 'multiple_timeslot_menu'));
-				// Add a price div on the product page for single day bookings
-				add_action('bkap_display_price_div', array(&$this, 'multiple_time_display_price'),10,1);
 				// Display multiple time slot price for single day bookings
 				add_action('bkap_display_updated_addon_price', array(&$this, 'show_multiple_time_price'), 10, 3);
 				// print hidden field for number of slots selected
@@ -366,26 +364,6 @@ function is_bkap_multi_time_active() {
 				return $booking_settings;
 			}
 			
-			/*********************************************************
-			 * Add price div on product page
-			 ********************************************************/
-			function multiple_time_display_price($product_id) {
-				$booking_settings = get_post_meta( $product_id, 'woocommerce_booking_settings', true);
-				if(isset($booking_settings['booking_enable_multiple_time']) && $booking_settings['booking_enable_multiple_time'] == 'multiple'):
-					if (function_exists('is_bkap_seasonal_active') && is_bkap_seasonal_active()) {
-					}
-					else {
-						$currency_symbol = get_woocommerce_currency_symbol();
-						if(has_filter('bkap_show_addon_price')) {
-						    $show_price = apply_filters('bkap_show_addon_price','');
-						} else {
-						    $show_price = 'show';
-						}
-						print('<div id="show_addon_price" name="show_addon_price" class="show_addon_price" style="display:'.$show_price.';">'.$currency_symbol.' 0</div>');
-					} 
-				endif;
-			}
-			
 			/*************************************************************
 			 * Print hidden fields to display the number of slots selected
 			 ************************************************************/
@@ -450,7 +428,8 @@ function is_bkap_multi_time_active() {
 					    }
 					} 
 					// display the price on the front end product page
-					print( 'jQuery( "#show_addon_price" ).html( "' . addslashes( $formatted_price ) . '");' );
+					$display_price = get_option( 'book.price-label' ) . ': ' . $formatted_price;
+					print( 'jQuery( "#bkap_price" ).html( "' . addslashes( $display_price ) . '");' );
 					die();
 				}	
 			}
