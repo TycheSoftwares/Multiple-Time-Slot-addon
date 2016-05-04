@@ -428,7 +428,7 @@ function is_bkap_multi_time_active() {
 					    }
 					} 
 					// display the price on the front end product page
-					$display_price = get_option( 'book.price-label' ) . ': ' . $formatted_price;
+					$display_price = get_option( 'book.price-label' ) . ' ' . $formatted_price;
 					print( 'jQuery( "#bkap_price" ).html( "' . addslashes( $display_price ) . '");' );
 					die();
 				}	
