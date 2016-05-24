@@ -386,8 +386,8 @@ function is_bkap_multi_time_active() {
 				    if ( function_exists( 'icl_object_id' ) ) {
 				        global $woocommerce_wpml, $woocommerce;
 				        if ( isset( $woocommerce_wpml->settings[ 'enable_multi_currency' ] ) && $woocommerce_wpml->settings[ 'enable_multi_currency' ] == '2' ) {
+				            $custom_post = bkap_common::bkap_get_custom_post( $product_id, $variation_id, $product_type );
 				            if ( $product_type == 'variable' ){
-				                $custom_post = get_post_meta( $variation_id, '_wcml_custom_prices_status', true);
 				                if( $custom_post == 1 ) {
 				                    $client_currency = $woocommerce->session->get( 'client_currency' );
 				                    if( $client_currency != '' && $client_currency != get_option( 'woocommerce_currency' ) ) {
@@ -396,7 +396,6 @@ function is_bkap_multi_time_active() {
 				                    }
 				                }
 				            } else if( $product_type == 'simple' ) {
-				                $custom_post = get_post_meta( $product_id, '_wcml_custom_prices_status', true);
 				                if( $custom_post == 1 ) {
 				                    $client_currency = $woocommerce->session->get( 'client_currency' );
 				                    if( $client_currency != '' && $client_currency != get_option( 'woocommerce_currency' ) ) {
@@ -437,11 +436,7 @@ function is_bkap_multi_time_active() {
 				    // If Multi currency is enabled, convert the amount before saving it
 				    $total_price = $price;
 				    if ( function_exists( 'icl_object_id' ) ) {
-				        if( $product_type == 'variable' ) {
-				            $custom_post = get_post_meta( $variation_id, '_wcml_custom_prices_status', true );
-				        } elseif( $product_type == 'simple' ) {
-				            $custom_post = get_post_meta( $product_id, '_wcml_custom_prices_status', true );
-				        }
+				        $custom_post = bkap_common::bkap_get_custom_post( $product_id, $variation_id, $product_type );
 				        if( $custom_post == 0 ) {
 				            $total_price = apply_filters( 'wcml_raw_price_amount', $price );
 				        }
@@ -456,11 +451,7 @@ function is_bkap_multi_time_active() {
 					    global $woocommerce_wpml;
 					    // Multi currency is enabled
 					    if ( isset( $woocommerce_wpml->settings[ 'enable_multi_currency' ] ) && $woocommerce_wpml->settings[ 'enable_multi_currency' ] == '2' ) {
-					        if( $product_type == 'variable' ) {
-					            $custom_post = get_post_meta( $variation_id, '_wcml_custom_prices_status', true );
-					        } elseif( $product_type == 'simple' ) {
-					            $custom_post = get_post_meta( $product_id, '_wcml_custom_prices_status', true );
-					        }
+					        $custom_post = bkap_common::bkap_get_custom_post( $product_id, $variation_id, $product_type );
 					        if( $custom_post == 0 ) {
                                 $formatted_price = apply_filters( 'wcml_formatted_price', $price);
 					        }
