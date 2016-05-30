@@ -446,7 +446,8 @@ function is_bkap_multi_time_active() {
 				    print( 'jQuery( "#bkap_price_charged" ).val(' . $total_price . ');' );
 				    
 				    // format the price
-				    $formatted_price = wc_price( $price );
+				    $wc_price_args = bkap_common::get_currency_args();
+				    $formatted_price = wc_price( $price, $wc_price_args );
 					if ( function_exists('icl_object_id') ) {
 					    global $woocommerce_wpml;
 					    // Multi currency is enabled
