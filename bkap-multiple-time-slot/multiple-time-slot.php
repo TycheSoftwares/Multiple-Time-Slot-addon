@@ -459,7 +459,7 @@ function is_bkap_multi_time_active() {
 					    }
 					} 
 					// display the price on the front end product page
-					$display_price = get_option( 'book.price-label' ) . ' ' . $formatted_price;
+					$display_price = get_option( 'book_price-label' ) . ' ' . $formatted_price;
 					print( 'jQuery( "#bkap_price" ).html( "' . addslashes( $display_price ) . '");' );
 					die();
 				}	
@@ -474,7 +474,7 @@ function is_bkap_multi_time_active() {
 				$time_drop_down = bkap_booking_process::get_time_slot($current_date,$post_id);
 			
 				$time_drop_down_array = explode("|",$time_drop_down);
-				$checkbox = "<label>".get_option('book.time-label').": </label><br>";
+				$checkbox = "<label>".get_option('book_time-label').": </label><br>";
 				$i = 0;
 				foreach ($time_drop_down_array as $k => $v) {
 					$i++; 
@@ -616,7 +616,7 @@ function is_bkap_multi_time_active() {
 										$time_slot .= "<br>".$from_time;
 									}
 								}
-								$name = get_option('book.item-cart-time');
+								$name = get_option('book_item-cart-time');
 								$other_data[] = array(
 										'name'    => $name,
 										'display' => $time_slot
@@ -659,7 +659,7 @@ function is_bkap_multi_time_active() {
 					    if ( array_key_exists( 'date', $booking[0] ) && $booking[0][ 'date' ] != "" ) {
 							$date = $booking[0]['date'];
 							//echo $date;
-							$name = get_option('book.item-meta-date');
+							$name = get_option('book_item-meta-date');
 							wc_add_order_item_meta( $order_item_id, $name, sanitize_text_field( $date , true ) );
 						}
 						
@@ -765,7 +765,7 @@ function is_bkap_multi_time_active() {
 							}
 							$time_slot_to_display = trim($time_slot_to_display, ",");
 							$meta_data_format = trim( $meta_data_format, ',' );
-							wc_add_order_item_meta( $order_item_id, get_option('book.item-meta-time'), $time_slot_to_display, true );
+							wc_add_order_item_meta( $order_item_id, get_option('book_item-meta-time'), $time_slot_to_display, true );
 							wc_add_order_item_meta( $order_item_id,  '_wapbk_time_slot', $meta_data_format, true );
 						}
 						$book_global_settings = json_decode(get_option('woocommerce_booking_global_settings'));
