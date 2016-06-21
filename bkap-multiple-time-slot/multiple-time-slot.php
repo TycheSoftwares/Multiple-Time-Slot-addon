@@ -325,7 +325,7 @@ function is_bkap_multi_time_active() {
 					<th>
 						<label for="booking_time_slot_label"><?php _e( 'Time Slot Selection:', 'woocommerce-booking');?></label>
 					</th>
-					<td>
+					<td style="width:380px">
 						<?php 
 						$enable_time = "";
 						if(isset($booking_settings['booking_enable_multiple_time']) && $booking_settings['booking_enable_multiple_time'] == "multiple" ) {
@@ -335,7 +335,9 @@ function is_bkap_multi_time_active() {
 						?>
 						<input type="radio" name="booking_enable_time_radio" id="booking_enable_time_radio" value="single" <?php echo $enabled_time = "checked";?>><?php _e('Single&nbsp&nbsp&nbsp&nbsp&nbsp;', 'woocommerce-booking');?> </input>
 						<input type="radio" id="booking_enable_time_radio" name="booking_enable_time_radio" value="multiple"<?php echo $enable_time;?>><?php _e('Multiple', 'woocommerce-booking');?> </input>
-						<img class="help_tip" width="16" height="16" style="margin-left:257px;" data-tip="<?php _e('Enable Single to select single timeslot on product page or Enable Multiple to select multiple timeslots on product page.', 'woocommerce-booking');?>" src="<?php echo plugins_url() ;?>/woocommerce/assets/images/help.png"/>
+                    </td>
+                    <td>
+						<img class="help_tip" width="16" height="16" data-tip="<?php _e('Enable Single to select single timeslot on product page or Enable Multiple to select multiple timeslots on product page.', 'woocommerce-booking');?>" src="<?php echo plugins_url() ;?>/woocommerce/assets/images/help.png"/>
 					</td>
 				</tr>
 				<script type="text/javascript">
