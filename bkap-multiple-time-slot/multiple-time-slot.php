@@ -449,17 +449,8 @@ function is_bkap_multi_time_active() {
 				    
 				    // format the price
 				    $wc_price_args = bkap_common::get_currency_args();
-				    $formatted_price = wc_price( $price, $wc_price_args );
-					if ( function_exists('icl_object_id') ) {
-					    global $woocommerce_wpml;
-					    // Multi currency is enabled
-					    if ( isset( $woocommerce_wpml->settings[ 'enable_multi_currency' ] ) && $woocommerce_wpml->settings[ 'enable_multi_currency' ] == '2' ) {
-					        $custom_post = bkap_common::bkap_get_custom_post( $product_id, $variation_id, $product_type );
-					        if( $custom_post == 0 ) {
-                                $formatted_price = apply_filters( 'wcml_formatted_price', $price);
-					        }
-					    }
-					} 
+				    $formatted_price = wc_price( $total_price, $wc_price_args );
+					
 					// display the price on the front end product page
 					$display_price = get_option( 'book_price-label' ) . ' ' . $formatted_price;
 					print( 'jQuery( "#bkap_price" ).html( "' . addslashes( $display_price ) . '");' );
