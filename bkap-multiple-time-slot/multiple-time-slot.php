@@ -423,7 +423,7 @@ function is_bkap_multi_time_active() {
     					}
 				    }
 				} else {
-					$price = $_POST[ 'price' ];
+					$price = $_POST[ 'price' ] * $_POST[ 'quantity' ];
 				}
 			
 				if( isset( $booking_settings[ 'booking_enable_multiple_time' ] ) && $booking_settings[ 'booking_enable_multiple_time' ] == 'multiple' ) {
