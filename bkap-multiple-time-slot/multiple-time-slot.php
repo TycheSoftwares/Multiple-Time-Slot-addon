@@ -380,8 +380,8 @@ function is_bkap_multi_time_active() {
 			 * Calculate the pridct when time slots are selected
 			 *************************************************************/
 			function show_multiple_time_price( $product_id, $booking_date, $variation_id ) {
-				$product = get_product( $product_id );
-				$product_type = $product->product_type;
+				$product = wc_get_product( $product_id );
+				$product_type = $product->get_type();
 				$booking_settings = get_post_meta( $product_id, 'woocommerce_booking_settings', true );
 				if( !isset( $_POST[ 'price' ] ) || ( isset( $_POST[ 'price' ] ) && $_POST[ 'price' ] == 0 ) ) {
 				    $wpml_multicurreny_enabled = 'no';
@@ -508,28 +508,6 @@ function is_bkap_multi_time_active() {
 				<?php 
 				die();
 			}
-			/******************************************************
-			 * Adjust prices when addons are set 
-			 *****************************************************/
-			function add_cart_item( $cart_item ) {
-				global $wpdb;
-				
-				$product_type = bkap_common::bkap_get_product_type($cart_item['product_id']);
-				$price = bkap_common::bkap_get_price($cart_item['product_id'],$cart_item['variation_id'],$product_type);
-				// Adjust price if addons are set
-				if (isset($cart_item['bkap_booking'])) :
-					$extra_cost = 0;
-					foreach ($cart_item['bkap_booking'] as $addon) :
-						if (isset($addon['price']) && $addon['price']>0) $extra_cost += $addon['price'];
-					endforeach;
-				
-					$extra_cost = $extra_cost - $price;
-					$cart_item['data']->adjust_price( $extra_cost );
-				
-				endif;
-				
-				return $cart_item;
-			}
 			
 			/******************************************************
 			 * calculate prices when products are added to the cart
@@ -537,8 +515,8 @@ function is_bkap_multi_time_active() {
 			function multiple_time_add_cart_item_data($cart_arr, $product_id, $variation_id) {
 				$booking_settings = get_post_meta($product_id, 'woocommerce_booking_settings', true);
 				$time_slots = "";
-				$product = get_product($product_id);
-				$product_type = $product->product_type;
+				$product = wc_get_product($product_id);
+				$product_type = $product->get_type();
 				if(isset($booking_settings['booking_enable_time']) && $booking_settings['booking_enable_time'] == 'on') {
 					if(isset($booking_settings['booking_enable_multiple_time']) && $booking_settings['booking_enable_multiple_time'] == 'multiple') {
 						$time_multiple_disp = $_POST['time_slot'];
