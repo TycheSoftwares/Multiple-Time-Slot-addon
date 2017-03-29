@@ -508,28 +508,6 @@ function is_bkap_multi_time_active() {
 				<?php 
 				die();
 			}
-			/******************************************************
-			 * Adjust prices when addons are set 
-			 *****************************************************/
-			function add_cart_item( $cart_item ) {
-				global $wpdb;
-				
-				$product_type = bkap_common::bkap_get_product_type($cart_item['product_id']);
-				$price = bkap_common::bkap_get_price($cart_item['product_id'],$cart_item['variation_id'],$product_type);
-				// Adjust price if addons are set
-				if (isset($cart_item['bkap_booking'])) :
-					$extra_cost = 0;
-					foreach ($cart_item['bkap_booking'] as $addon) :
-						if (isset($addon['price']) && $addon['price']>0) $extra_cost += $addon['price'];
-					endforeach;
-				
-					$extra_cost = $extra_cost - $price;
-					$cart_item['data']->adjust_price( $extra_cost );
-				
-				endif;
-				
-				return $cart_item;
-			}
 			
 			/******************************************************
 			 * calculate prices when products are added to the cart
