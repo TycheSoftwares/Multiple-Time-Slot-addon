@@ -380,8 +380,8 @@ function is_bkap_multi_time_active() {
 			 * Calculate the pridct when time slots are selected
 			 *************************************************************/
 			function show_multiple_time_price( $product_id, $booking_date, $variation_id ) {
-				$product = get_product( $product_id );
-				$product_type = $product->product_type;
+				$product = wc_get_product( $product_id );
+				$product_type = $product->get_type();
 				$booking_settings = get_post_meta( $product_id, 'woocommerce_booking_settings', true );
 				if( !isset( $_POST[ 'price' ] ) || ( isset( $_POST[ 'price' ] ) && $_POST[ 'price' ] == 0 ) ) {
 				    $wpml_multicurreny_enabled = 'no';
@@ -537,8 +537,8 @@ function is_bkap_multi_time_active() {
 			function multiple_time_add_cart_item_data($cart_arr, $product_id, $variation_id) {
 				$booking_settings = get_post_meta($product_id, 'woocommerce_booking_settings', true);
 				$time_slots = "";
-				$product = get_product($product_id);
-				$product_type = $product->product_type;
+				$product = wc_get_product($product_id);
+				$product_type = $product->get_type();
 				if(isset($booking_settings['booking_enable_time']) && $booking_settings['booking_enable_time'] == 'on') {
 					if(isset($booking_settings['booking_enable_multiple_time']) && $booking_settings['booking_enable_multiple_time'] == 'multiple') {
 						$time_multiple_disp = $_POST['time_slot'];
