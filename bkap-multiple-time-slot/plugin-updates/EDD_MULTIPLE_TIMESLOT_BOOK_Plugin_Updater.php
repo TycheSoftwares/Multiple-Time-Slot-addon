@@ -7,7 +7,7 @@
  * Allows plugins to use their own update API.
  *
  * @author Ashok Rane
- * @version 2.0
+ * @version 2.1
  */
 class EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater {
 	private $api_url  = 'http://www.tychesoftwares.com/';
