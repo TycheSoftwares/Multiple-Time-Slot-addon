@@ -291,10 +291,10 @@ function is_bkap_multi_time_active() {
 													<?php
 												}
 						
-								function multiple_timeslot_menu()
-								{
-									$page = add_submenu_page('booking_settings', __( 'Activate Multiple Timeslot License', 'woocommerce-booking' ), __( 'Activate Multiple Timeslot License', 'woocommerce-booking' ), 'manage_woocommerce', 'multiple_timeslot_license_page', array(&$this, 'edd_sample_license_page' ));
-								}
+			function multiple_timeslot_menu()
+			{
+				$page = add_submenu_page('edit.php?post_type=bkap_booking', __( 'Activate Multiple Timeslot License', 'woocommerce-booking' ), __( 'Activate Multiple Timeslot License', 'woocommerce-booking' ), 'manage_woocommerce', 'multiple_timeslot_license_page', array(&$this, 'edd_sample_license_page' ));
+			}
 			
 			function multiple_time_slot_activate()
 			{
