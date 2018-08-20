@@ -94,7 +94,23 @@ function is_bkap_multi_time_active() {
 				add_action('admin_init', array(&$this, 'edd_sample_register_option_multiple_timeslot'));
 				add_action('admin_init', array(&$this, 'edd_sample_deactivate_license_multiple_timeslot'));
 				add_action('admin_init', array(&$this, 'edd_sample_activate_license_multiple_timeslot'));
+
+				// print hidden fields on the front end product page
+            add_action( 'bkap_print_hidden_fields',                         array( &$this, 'bkap_multiple_print_hidden_lockout' ), 10, 1 );
 	
+			}
+
+			function bkap_multiple_print_hidden_lockout( $product_id ) {
+			    if ( "multiple" == self::slot_type( $product_id ) ) {
+			        ?>
+				    <input 
+				        type='hidden' 
+				        id='total_multiple_price_calculated' 
+				        name='total_multiple_price_calculated' 
+				        value='' 
+				    >
+				    <?php
+			    }
 			}
 			
 			function multiple_time_slot_error_notice() {
@@ -425,14 +441,18 @@ function is_bkap_multi_time_active() {
     					}
 				    }
 				} else {
-					$price = $_POST[ 'price' ] * $_POST[ 'quantity' ];
+					$prices = "";
+
+					if( is_array( $_POST['price'] ) ){
+						$price = array_sum( $_POST['price'] ) * $_POST[ 'quantity' ];
+						$prices = implode(',', $_POST['price']);
+					}else{
+						$price = $_POST[ 'price' ] * $_POST[ 'quantity' ];	
+					}
+					
 				}
 			
-				if( isset( $booking_settings[ 'booking_enable_multiple_time' ] ) && $booking_settings[ 'booking_enable_multiple_time' ] == 'multiple' ) {
-					if ( isset( $_POST[ 'timeslots' ] ) ) {
-						$price = $price * $_POST[ 'timeslots' ];
-					}
-				}
+				
 				if ( function_exists( 'is_bkap_deposits_active' ) && is_bkap_deposits_active() ) {
 					$_POST[ 'price' ] = $price;
 				} else {
@@ -448,6 +468,7 @@ function is_bkap_multi_time_active() {
 				    print( 'jQuery( "#total_price_calculated" ).val(' . $total_price . ');' );
 				    // save the price in a hidden field to be used later
 				    print( 'jQuery( "#bkap_price_charged" ).val(' . $total_price . ');' );
+				    print( 'jQuery( "#total_multiple_price_calculated" ).val("' . $prices . '");' );
 				    
 				    // format the price
 				    $wc_price_args = bkap_common::get_currency_args();
