@@ -1,0 +1,15 @@
+.mul-button input[type=checkbox]{
+	margin:10px;
+}
+.mul-button {    
+    background-color:#EFEFEF;
+    border-radius:4px;
+    border:1px solid #D0D0D0;
+    overflow:auto;
+    cursor: pointer;
+    padding: 4px 20px 5px 10px;
+}
+.mul-checked{
+	background: black;
+	color: white;
+}

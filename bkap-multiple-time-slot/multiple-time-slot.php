@@ -1,12 +1,15 @@
 <?php
-/*
-Plugin Name: Multiple Time Slot Addon
-Plugin URI: https://www.tychesoftwares.com/store/premium-plugins/multiple-time-slot-addon-woocommerce-booking-appointment-plugin/
-Description: This is an addon for the WooCommerce Booking & Appointment Plugin which lets you to select multiple time slots on a date for each product on the website.
-Version: 2.1
-Author: Tyche Softwares
-Author URI: http://www.tychesoftwares.com/
-*/
+/**
+ * Plugin Name: Multiple Time Slot Addon
+ * Plugin URI: https://www.tychesoftwares.com/store/premium-plugins/multiple-time-slot-addon-woocommerce-booking-appointment-plugin/
+ * Description: This is an addon for the Booking & Appointment Plugin for WooCommerce which lets you to select multiple time slots on a date for each product on the website.
+ * Version: 2.1
+ * Author: Tyche Softwares
+ * Author URI: http://www.tychesoftwares.com/
+ * Requires PHP: 5.6
+ * WC requires at least: 3.0.0
+ * WC tested up to: 3.5.2
+ */
 
 global $MultipleTimeslotUpdateChecker;
 $MultipleTimeslotUpdateChecker = '2.1';
@@ -17,7 +20,7 @@ define( 'EDD_SL_STORE_URL_MULTIPLE_TIMESLOT_BOOK', 'http://www.tychesoftwares.co
 // the name of your product. This is the title of your product in EDD and should match the download title in EDD exactly
 define( 'EDD_SL_ITEM_NAME_MULTIPLE_TIMESLOT_BOOK', 'Multiple Time Slot addon for Woocommerce Booking and Appointment Plugin' ); // IMPORTANT: change the name of this constant to something unique to prevent conflicts with other plugins using this system
 
-if( !class_exists( 'EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater' ) ) {
+if ( !class_exists( 'EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater' ) ) {
 	// load our custom updater if it doesn't already exist
 	include( dirname( __FILE__ ) . '/plugin-updates/EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater.php' );
 }
@@ -26,35 +29,35 @@ if( !class_exists( 'EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater' ) ) {
 $license_key = trim( get_option( 'edd_sample_license_key_multiple_timeslot_book' ) );
 
 // setup the updater
-$edd_updater = new EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater( EDD_SL_STORE_URL_MULTIPLE_TIMESLOT_BOOK, __FILE__, array(
-		'version' 	=> '2.1', 		// current version number
-		'license' 	=> $license_key, 	// license key (used get_option above to retrieve from DB)
-		'item_name' => EDD_SL_ITEM_NAME_MULTIPLE_TIMESLOT_BOOK, 	// name of this plugin
-		'author' 	=> 'Ashok Rane'  // author of this plugin
-)
-);
+$edd_updater = new EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater( 	EDD_SL_STORE_URL_MULTIPLE_TIMESLOT_BOOK,
+																__FILE__,
+																array(
+																	'version' 	=> '2.1', // current version number
+																	'license' 	=> $license_key, // license key
+																	'item_name' => EDD_SL_ITEM_NAME_MULTIPLE_TIMESLOT_BOOK, // name of this plugin
+																	'author' 	=> 'Ashok Rane'  // author of this plugin
+																)
+															);
 
 function is_bkap_multi_time_active() {
-	if (is_plugin_active('bkap-multiple-time-slot/multiple-time-slot.php')) {
+	if ( is_plugin_active( 'bkap-multiple-time-slot/multiple-time-slot.php' ) ) {
 		return true;
-	}
-	else {
+	} else {
 		return false;
 	}
 }
-//register_uninstall_hook( __FILE__, 'bkap_multiple_time_slot_delete');
 
 //if (is_woocommerce_active())
 {
 	/**
 	 * Localisation
 	 **/
-	load_plugin_textdomain('multiple-time-slot', false, dirname( plugin_basename( __FILE__ ) ) . '/');
+	load_plugin_textdomain( 'multiple-time-slot', false, dirname( plugin_basename( __FILE__ ) ) . '/');
 
 	/**
 	 * multiple_time_slot class
 	 **/
-	if (!class_exists('multiple_time_slot')) {
+	if ( !class_exists( 'multiple_time_slot' ) ) {
 
 		class multiple_time_slot {
 
@@ -68,40 +71,62 @@ function is_bkap_multi_time_active() {
 						'booking_weekday_5' => 'Friday',
 						'booking_weekday_6' => 'Saturday'
 				);
+
 				// Initialize settings
-				register_activation_hook( __FILE__, array(&$this, 'multiple_time_slot_activate'));
-				add_action( 'admin_notices', array( &$this, 'multiple_time_slot_error_notice' ) );
+				register_activation_hook( __FILE__, 			array( &$this, 'multiple_time_slot_activate' ) );
+				add_action( 'admin_notices', 					array( &$this, 'multiple_time_slot_error_notice' ) );
 				// used to add new settings on the product page booking box
-				add_action('bkap_before_time_enabled', array(&$this, 'show_field_settings'));
-				add_filter('bkap_save_product_settings', array(&$this, 'product_settings_save'), 10, 2);
-				add_filter('bkap_function_slot', array(&$this, 'slot_function'),10,1);
-				add_filter('bkap_slot_type', array(&$this, 'slot_type'),10,1);
-				add_filter('bkap_addon_add_cart_item_data', array(&$this, 'multiple_time_add_cart_item_data'), 15, 3);
-				add_filter('bkap_get_item_data', array(&$this, 'multiple_time_get_item_data'), 10, 2 );
-				add_action('bkap_update_booking_history', array(&$this, 'multiple_time_order_item_meta'), 50,2);
+				add_action('bkap_before_time_enabled', 			array( &$this, 'show_field_settings' ) );
+				add_filter('bkap_save_product_settings', 		array( &$this, 'product_settings_save' ), 10, 2 );
+				add_filter('bkap_function_slot', 				array( &$this, 'slot_function' ), 10, 1 );
+				add_filter('bkap_slot_type', 					array( &$this, 'slot_type' ), 10, 1 );
+				add_filter('bkap_addon_add_cart_item_data', 	array( &$this, 'multiple_time_add_cart_item_data' ), 15, 3 );
+				add_filter('bkap_get_item_data', 				array( &$this, 'multiple_time_get_item_data' ), 10, 2 );
+				add_action('bkap_update_booking_history', 		array( &$this, 'multiple_time_order_item_meta' ), 50, 2 );
 				// Validate on cart and checkout page
-				add_action('bkap_validate_cart_items', array(&$this, 'multiple_time_quantity_check'),10,1);
+				add_action('bkap_validate_cart_items', 			array( &$this, 'multiple_time_quantity_check' ), 10, 1 );
 				// Validation on the product page
-				add_action('bkap_validate_add_to_cart',array(&$this,'multiple_time_quantity_prod'),10,2);
-				add_action('bkap_order_status_cancelled', array(&$this, 'bkap_cancel_order'),10,3);
-				add_action('bkap_add_submenu',array(&$this, 'multiple_timeslot_menu'));
+				add_action('bkap_validate_add_to_cart',			array( &$this, 'multiple_time_quantity_prod' ), 10, 2 );
+				add_action('bkap_order_status_cancelled', 		array( &$this, 'bkap_cancel_order' ), 10, 3 );
+				add_action('bkap_add_submenu',					array( &$this, 'multiple_timeslot_menu' ) );
 				// Display multiple time slot price for single day bookings
-				add_action('bkap_display_updated_addon_price', array(&$this, 'show_multiple_time_price'), 10, 3);
+				add_action('bkap_display_updated_addon_price', 	array( &$this, 'show_multiple_time_price' ), 10, 3 );
 				// print hidden field for number of slots selected
-				add_action('bkap_print_hidden_fields', array(&$this, 'multiple_print_fields'), 10,1);
+				add_action('bkap_print_hidden_fields', 			array( &$this, 'multiple_print_fields' ), 10, 2 );
 				// Ajax calls
-				add_action('init', array(&$this, 'multiple_time_load_ajax'));
-				add_action('admin_init', array(&$this, 'edd_sample_register_option_multiple_timeslot'));
-				add_action('admin_init', array(&$this, 'edd_sample_deactivate_license_multiple_timeslot'));
-				add_action('admin_init', array(&$this, 'edd_sample_activate_license_multiple_timeslot'));
+				add_action('init', 								array( &$this, 'multiple_time_load_ajax' ) );
+				add_action('admin_init', 						array( &$this, 'edd_sample_register_option_multiple_timeslot' ) );
+				add_action('admin_init', 						array( &$this, 'edd_sample_deactivate_license_multiple_timeslot' ) );
+				add_action('admin_init', 						array( &$this, 'edd_sample_activate_license_multiple_timeslot' ) );
 
 				// print hidden fields on the front end product page
-            add_action( 'bkap_print_hidden_fields',                         array( &$this, 'bkap_multiple_print_hidden_lockout' ), 10, 1 );
+            	add_action( 'bkap_print_hidden_fields',         array( &$this, 'bkap_multiple_print_hidden_lockout' ), 10, 2 );
+
+            	add_action( 'woocommerce_before_single_product',array( &$this, 'multiple_front_side_scripts_css' ) );
 	
 			}
 
-			function bkap_multiple_print_hidden_lockout( $product_id ) {
-			    if ( "multiple" == self::slot_type( $product_id ) ) {
+			function multiple_front_side_scripts_css() {
+
+				global $post;
+
+				$duplicate_of     =   bkap_common::bkap_get_product_id ( $post->ID );
+				$booking_settings =   get_post_meta( $duplicate_of, 'woocommerce_booking_settings', true );
+				
+				if ( isset( $booking_settings[ 'booking_enable_date' ] ) && $booking_settings[ 'booking_enable_date' ] == 'on' ) {
+					wp_enqueue_style( 	'multiple-timeslot',
+										plugins_url( 'assets/css/multiple-timeslot.css', __FILE__ ),
+										'',
+										'',
+										false
+									);
+				}
+				
+			}
+
+			function bkap_multiple_print_hidden_lockout( $product_id, $booking_settings ) {
+			    
+			    if ( "multiple" == self::slot_type( $product_id, $booking_settings ) ) {
 			        ?>
 				    <input 
 				        type='hidden' 
@@ -115,25 +140,21 @@ function is_bkap_multi_time_active() {
 			
 			function multiple_time_slot_error_notice() {
 			    if ( !is_plugin_active( 'woocommerce-booking/woocommerce-booking.php' ) ) {
-			        echo "<div class=\"error\"><p>Multiple Time Slot Addon is enabled but not effective. It requires WooCommerce Booking and Appointment plugin in order to work.</p></div>";
+			        echo "<div class=\"error\"><p>Multiple Time Slot Addon is enabled but not effective. It requires Booking & Appointment Plugin for WooCommerce in order to work.</p></div>";
 			    }
 			}
 			
 			function multiple_time_load_ajax() {
 				if ( !is_user_logged_in() ) {
-					add_action('wp_ajax_nopriv_bkap_multiple_time_slot',  array(&$this,'bkap_multiple_time_slot'));
-				}
-				else {
-					add_action('wp_ajax_bkap_multiple_time_slot',  array(&$this,'bkap_multiple_time_slot'));
-				}
-				
+					add_action('wp_ajax_nopriv_bkap_multiple_time_slot',  	array( &$this,'bkap_multiple_time_slot' ) );
+				} else {
+					add_action('wp_ajax_bkap_multiple_time_slot',  			array( &$this,'bkap_multiple_time_slot' ) );
+				}				
 			}
 			
-			function edd_sample_activate_license_multiple_timeslot()
-			{
+			function edd_sample_activate_license_multiple_timeslot() {
 				// listen for our activate button to be clicked
-				if( isset( $_POST['edd_license_activate'] ) )
-				{
+				if ( isset( $_POST['edd_license_activate'] ) ) {
 					// run a quick security check
 					if( ! check_admin_referer( 'edd_sample_nonce', 'edd_sample_nonce' ) )
 						return; // get out if we didn't click the Activate button
@@ -158,21 +179,18 @@ function is_bkap_multi_time_active() {
 					// decode the license data
 					$license_data = json_decode( wp_remote_retrieve_body( $response ) );
 			
-					// $license_data->license will be either "active" or "inactive"
-			
-					update_option( 'edd_sample_license_status_multiple_timeslot_book', $license_data->license );
-			
+					// $license_data->license will be either "active" or "inactive"			
+					update_option( 'edd_sample_license_status_multiple_timeslot_book', $license_data->license );			
 				}
 			}
-			/***********************************************
-			 * Illustrates how to deactivate a license key.
-			* This will descrease the site count
-			***********************************************/
+
+			/**
+			 * Illustrates how to deactivate a license key. This will descrease the site count
+			 */
 			
-			function edd_sample_deactivate_license_multiple_timeslot()
-			{
+			function edd_sample_deactivate_license_multiple_timeslot() {
 				// listen for our activate button to be clicked
-				if( isset( $_POST['edd_license_deactivate'] ) )
+				if ( isset( $_POST['edd_license_deactivate'] ) )
 				{
 					// run a quick security check
 					if( ! check_admin_referer( 'edd_sample_nonce', 'edd_sample_nonce' ) )
@@ -205,28 +223,22 @@ function is_bkap_multi_time_active() {
 			
 				}
 			}
-			/************************************
-			 * this illustrates how to check if
-			* a license key is still valid
-			* the updater does this for you,
-			* so this is only needed if you
-			* want to do something custom
-			*************************************/
+
+			/**
+			 * this illustrates how to check if a license key is still valid the updater does this for you, so this is only needed if you want to do something custom
+			 */
 			
-			function edd_sample_check_license()
-			{
-				global $wp_version;
+			function edd_sample_check_license() {
 					
-				$license = trim( get_option( 'edd_sample_license_key_multiple_timeslot_book' ) );
+				$license 	= trim( get_option( 'edd_sample_license_key_multiple_timeslot_book' ) );
 					
-				$api_params = array(
-						'edd_action' => 'check_license',
-						'license' => $license,
-						'item_name' => urlencode( EDD_SL_ITEM_NAME_MULTIPLE_TIMESLOT_BOOK )
-				);
+				$api_params = array(	'edd_action' => 'check_license',
+										'license' => $license,
+										'item_name' => urlencode( EDD_SL_ITEM_NAME_MULTIPLE_TIMESLOT_BOOK )
+									);
 					
 				// Call the custom API.
-				$response = wp_remote_get( add_query_arg( $api_params, EDD_SL_STORE_URL_MULTIPLE_TIMESLOT_BOOK ), array( 'timeout' => 15, 'sslverify' => false ) );
+				$response 	= wp_remote_get( add_query_arg( $api_params, EDD_SL_STORE_URL_MULTIPLE_TIMESLOT_BOOK ), array( 'timeout' => 15, 'sslverify' => false ) );
 					
 					
 				if ( is_wp_error( $response ) )
@@ -234,137 +246,158 @@ function is_bkap_multi_time_active() {
 					
 				$license_data = json_decode( wp_remote_retrieve_body( $response ) );
 					
-				if( $license_data->license == 'valid' ) {
-					echo 'valid'; exit;
-					// this license is still valid
+				if ( $license_data->license == 'valid' ) {
+					echo 'valid'; exit; // this license is still valid					
 				} else {
-					echo 'invalid'; exit;
-					// this license is no longer valid
+					echo 'invalid'; exit; // this license is no longer valid					
 				}
 			}
 				
-			function edd_sample_register_option_multiple_timeslot()
-			{
+			function edd_sample_register_option_multiple_timeslot() {
 				// creates our settings in the options table
-				register_setting('edd_multiple_timeslot_license', 'edd_sample_license_key_multiple_timeslot_book', array(&$this, 'edd_sanitize_license_multiple_timeslot' ));
+				register_setting( 	'edd_multiple_timeslot_license',
+									'edd_sample_license_key_multiple_timeslot_book',
+									array( &$this, 'edd_sanitize_license_multiple_timeslot' )
+								);
 			}
 			
-			
-			function edd_sanitize_license_multiple_timeslot( $new )
-			{
+			function edd_sanitize_license_multiple_timeslot( $new ) {
 				$old = get_option( 'edd_sample_license_key_multiple_timeslot_book' );
-				if( $old && $old != $new ) {
+				if ( $old && $old != $new ) {
 					delete_option( 'edd_sample_license_status_multiple_timeslot_book' ); // new license has been entered, so must reactivate
 				}
 				return $new;
 			}
 			
-			function edd_sample_license_page()
-			{
-				$license 	= get_option( 'edd_sample_license_key_multiple_timeslot_book' );
-				$status 	= get_option( 'edd_sample_license_status_multiple_timeslot_book' );
-					
+			function edd_sample_license_page() {
+				$license = get_option( 'edd_sample_license_key_multiple_timeslot_book' );
+				$status  = get_option( 'edd_sample_license_status_multiple_timeslot_book' );					
 				?>
-													<div class="wrap">
-														<h2><?php _e('Plugin License Options'); ?></h2>
-														<form method="post" action="options.php">
-														
-															<?php settings_fields('edd_multiple_timeslot_license'); ?>
-															
-															<table class="form-table">
-																<tbody>
-																	<tr valign="top">	
-																		<th scope="row" valign="top">
-																			<?php _e('License Key'); ?>
-																		</th>
-																		<td>
-																			<input id="edd_sample_license_key_multiple_timeslot_book" name="edd_sample_license_key_multiple_timeslot_book" type="text" class="regular-text" value="<?php esc_attr_e( $license ); ?>" />
-																			<label class="description" for="edd_sample_license_key"><?php _e('Enter your license key'); ?></label>
-																		</td>
-																	</tr>
-																	<?php if( false !== $license ) { ?>
-																		<tr valign="top">	
-																			<th scope="row" valign="top">
-																				<?php _e('Activate License'); ?>
-																			</th>
-																			<td>
-																				<?php if( $status !== false && $status == 'valid' ) { ?>
-																					<span style="color:green;"><?php _e('active'); ?></span>
-																					<?php wp_nonce_field( 'edd_sample_nonce', 'edd_sample_nonce' ); ?>
-																					<input type="submit" class="button-secondary" name="edd_license_deactivate" value="<?php _e('Deactivate License'); ?>"/>
-																				<?php } else {
-																					wp_nonce_field( 'edd_sample_nonce', 'edd_sample_nonce' ); ?>
-																					<input type="submit" class="button-secondary" name="edd_license_activate" value="<?php _e('Activate License'); ?>"/>
-																				<?php } ?>
-																			</td>
-																		</tr>
-																	<?php } ?>
-																</tbody>
-															</table>	
-															<?php submit_button(); ?>
-														
-														</form>
-													<?php
-												}
+				<div class="wrap">
+					<h2><?php _e('Plugin License Options'); ?></h2>
+					<form method="post" action="options.php">
+					
+						<?php settings_fields('edd_multiple_timeslot_license'); ?>
 						
-			function multiple_timeslot_menu()
-			{
-				$page = add_submenu_page('edit.php?post_type=bkap_booking', __( 'Activate Multiple Timeslot License', 'woocommerce-booking' ), __( 'Activate Multiple Timeslot License', 'woocommerce-booking' ), 'manage_woocommerce', 'multiple_timeslot_license_page', array(&$this, 'edd_sample_license_page' ));
+						<table class="form-table">
+							<tbody>
+								<tr valign="top">	
+									<th scope="row" valign="top">
+										<?php _e('License Key'); ?>
+									</th>
+									<td>
+										<input id="edd_sample_license_key_multiple_timeslot_book" name="edd_sample_license_key_multiple_timeslot_book" type="text" class="regular-text" value="<?php esc_attr_e( $license ); ?>" />
+										<label class="description" for="edd_sample_license_key"><?php _e('Enter your license key'); ?></label>
+									</td>
+								</tr>
+								<?php if( false !== $license ) { ?>
+									<tr valign="top">	
+										<th scope="row" valign="top">
+											<?php _e('Activate License'); ?>
+										</th>
+										<td>
+											<?php if( $status !== false && $status == 'valid' ) { ?>
+												<span style="color:green;"><?php _e('active'); ?></span>
+												<?php wp_nonce_field( 'edd_sample_nonce', 'edd_sample_nonce' ); ?>
+												<input type="submit" class="button-secondary" name="edd_license_deactivate" value="<?php _e('Deactivate License'); ?>"/>
+											<?php } else {
+												wp_nonce_field( 'edd_sample_nonce', 'edd_sample_nonce' ); ?>
+												<input type="submit" class="button-secondary" name="edd_license_activate" value="<?php _e('Activate License'); ?>"/>
+											<?php } ?>
+										</td>
+									</tr>
+								<?php } ?>
+							</tbody>
+						</table>	
+						<?php submit_button(); ?>
+					
+					</form>
+				<?php
+			}
+						
+			function multiple_timeslot_menu() {
+				$page = add_submenu_page( 	'edit.php?post_type=bkap_booking',
+											__( 'Activate Multiple Timeslot License', 'woocommerce-booking' ),
+											__( 'Activate Multiple Timeslot License', 'woocommerce-booking' ),
+											'manage_woocommerce',
+											'multiple_timeslot_license_page',
+											array( &$this, 'edd_sample_license_page' )
+										);
 			}
 			
-			function multiple_time_slot_activate()
-			{
-			
-			}
+			function multiple_time_slot_activate(){}
 				
 			function slot_function() {
 				 return 'bkap_multiple_time_slot';
 			}
 			 
-			function slot_type($product_id) {
-				$booking_settings = get_post_meta($product_id, 'woocommerce_booking_settings', true);
-				if(isset($booking_settings['booking_enable_time']) && $booking_settings['booking_enable_time'] == 'on') {
-					if(isset($booking_settings['booking_enable_multiple_time'] ) && $booking_settings['booking_enable_multiple_time'] == "multiple" ) {
+			function slot_type( $product_id, $booking_settings = array() ) {
+				
+				if ( empty($booking_settings ) ) {
+					$booking_settings = get_post_meta( $product_id, 'woocommerce_booking_settings', true );	
+				}
+				
+				if ( isset( $booking_settings['booking_enable_time'] ) && $booking_settings['booking_enable_time'] == 'on' ) {
+					if ( isset( $booking_settings['booking_enable_multiple_time'] ) && $booking_settings['booking_enable_multiple_time'] == "multiple" ) {
 						return 'multiple';
 					}
 				}
 			}
 			
-			function show_field_settings($product_id) {
-				$booking_settings = get_post_meta($product_id, 'woocommerce_booking_settings', true);
-				$booking_time_slot_selection = 'none';
-				if (isset($booking_settings['booking_enable_time']) && $booking_settings['booking_enable_time'] == 'on') {
+			function show_field_settings( $product_id ) {
+				
+				$booking_settings 				= get_post_meta( $product_id, 'woocommerce_booking_settings', true );
+				$booking_time_slot_selection 	= 'none';
+				
+				if ( isset($booking_settings['booking_enable_time'] ) && $booking_settings['booking_enable_time'] == 'on' ) {
 					$booking_time_slot_selection = 'show';
 				}
+				
 				?>			
-				<div id="booking_time_slot" style="display:<?=$booking_time_slot_selection?>;">
+				<div id="booking_time_slot">
+					
 					<div style="max-width:30%;display:inline-block;">
     					<h4>
     						<label for="booking_time_slot_label"><?php _e( 'Time Slot Selection:', 'woocommerce-booking');?></label>
     					</h4>
 					</div>
+					
 					<div style="max-width:60%;display:inline-block;margin-left:10%;">
 						<?php 
 						$enable_time = "";
-						if(isset($booking_settings['booking_enable_multiple_time']) && $booking_settings['booking_enable_multiple_time'] == "multiple" ) {
-							$enable_time = "checked";
-							$enabled_time = "";
+						if ( isset( $booking_settings['booking_enable_multiple_time'] )
+							&& $booking_settings['booking_enable_multiple_time'] == "multiple"
+						) {
+							$enable_time 	= "checked";
+							$enabled_time 	= "";
 						}
 						?>
-						<input type="radio" name="booking_enable_time_radio" id="booking_enable_time_radio" value="single" <?php echo $enabled_time = "checked";?>><?php _e('Single&nbsp&nbsp&nbsp&nbsp&nbsp;', 'woocommerce-booking');?> </input>
-						<input type="radio" id="booking_enable_time_radio" name="booking_enable_time_radio" value="multiple"<?php echo $enable_time;?>><?php _e('Multiple', 'woocommerce-booking');?> </input>
+						<input 	type="radio"
+								name="booking_enable_time_radio"
+								id="booking_enable_time_radio"
+								value="single"
+								<?php echo $enabled_time = "checked";?>><?php _e( 'Single&nbsp&nbsp&nbsp&nbsp&nbsp;', 'woocommerce-booking' );?>
+							</input>
+						<input 	type="radio"
+								id="booking_enable_time_radio"
+								name="booking_enable_time_radio"
+								value="multiple"<?php echo $enable_time;?>><?php _e( 'Multiple', 'woocommerce-booking' );?>
+							</input>
                     </div>
+
                     <div style="width:10%;display:inline-block;margin-left:10%;">
-						<img class="help_tip" width="16" height="16" data-tip="<?php _e('Enable Single to select single timeslot on product page or Enable Multiple to select multiple timeslots on product page.', 'woocommerce-booking');?>" src="<?php echo plugins_url() ;?>/woocommerce/assets/images/help.png"/>
+						<img 	class="help_tip"
+								width="16"
+								height="16"
+								data-tip="<?php _e('Enable Single to select single timeslot on product page or Enable Multiple to select multiple timeslots on product page.', 'woocommerce-booking');?>"
+								src="<?php echo plugins_url() ;?>/woocommerce/assets/images/help.png"/>
 					</div>
 				</div>
 				<script type="text/javascript">
-					jQuery("#booking_enable_time").change(function() {
-						if(jQuery('#booking_enable_time').attr('checked')) {
-							jQuery('#booking_time_slot').show();
-								
-						}
-						else {
+					jQuery( "#booking_enable_time").change( function() {
+						if( jQuery( '#booking_enable_time' ).attr( 'checked' ) ) {
+							jQuery( '#booking_time_slot' ).show();								
+						} else {
 							jQuery('#booking_time_slot').hide();
 						}
 						});
@@ -372,53 +405,59 @@ function is_bkap_multi_time_active() {
 				<?php 
 			}
 
-			function product_settings_save($booking_settings, $product_id) {
-				if(isset($_POST['booking_enable_time_radio']) && $_POST['booking_enable_time_radio'] == 'single') {
-						$enable_multiple_time = 'single';
-				} 
-				else if(isset($_POST['booking_enable_time_radio']) && $_POST['booking_enable_time_radio'] == 'multiple') {
-					$enable_multiple_time = 'multiple';
-				}
+			function product_settings_save( $booking_settings, $product_id ) {
 				
+				if ( isset($_POST['booking_enable_time_radio'] ) && $_POST['booking_enable_time_radio'] == 'single' ) {
+						$enable_multiple_time = 'single';
+				} else if ( isset( $_POST['booking_enable_time_radio'] ) && $_POST['booking_enable_time_radio'] == 'multiple' ) {
+					$enable_multiple_time = 'multiple';
+				}				
 				$booking_settings['booking_enable_multiple_time'] = $enable_multiple_time;
+				
 				return $booking_settings;
 			}
 			
-			/*************************************************************
+			/**
 			 * Print hidden fields to display the number of slots selected
-			 ************************************************************/
-			function multiple_print_fields($product_id) {
-				$booking_settings = get_post_meta($product_id, 'woocommerce_booking_settings', true);
-				if(isset($booking_settings['booking_enable_multiple_time']) && $booking_settings['booking_enable_multiple_time'] == 'multiple') {
+			 */
+			function multiple_print_fields( $product_id, $booking_settings ) {
+
+				if ( isset( $booking_settings['booking_enable_multiple_time'] ) && $booking_settings['booking_enable_multiple_time'] == 'multiple' ) {
 					print('<input type="hidden" id="wapbk_number_of_timeslots" name="wapbk_number_of_timeslots" value="0"/>');
 				}
 			}
 			
-			/**************************************************************
+			/**
 			 * Calculate the pridct when time slots are selected
-			 *************************************************************/
+			 */
 			function show_multiple_time_price( $product_id, $booking_date, $variation_id ) {
-				$product = wc_get_product( $product_id );
-				$product_type = $product->get_type();
-				$booking_settings = get_post_meta( $product_id, 'woocommerce_booking_settings', true );
-				if( !isset( $_POST[ 'price' ] ) || ( isset( $_POST[ 'price' ] ) && $_POST[ 'price' ] == 0 ) ) {
+				
+				$product 			= wc_get_product( $product_id );
+				$product_type 		= $product->get_type();
+				$booking_settings 	= get_post_meta( $product_id, 'woocommerce_booking_settings', true );
+
+				if ( !isset( $_POST[ 'price' ] ) || ( isset( $_POST[ 'price' ] ) && $_POST[ 'price' ] == 0 ) ) {
+				    
 				    $wpml_multicurreny_enabled = 'no';
+				    
 				    if ( function_exists( 'icl_object_id' ) ) {
+				        
 				        global $woocommerce_wpml, $woocommerce;
+				        
 				        if ( isset( $woocommerce_wpml->settings[ 'enable_multi_currency' ] ) && $woocommerce_wpml->settings[ 'enable_multi_currency' ] == '2' ) {
 				            $custom_post = bkap_common::bkap_get_custom_post( $product_id, $variation_id, $product_type );
-				            if ( $product_type == 'variable' ){
-				                if( $custom_post == 1 ) {
+				            if ( $product_type == 'variable' ) {
+				                if ( $custom_post == 1 ) {
 				                    $client_currency = $woocommerce->session->get( 'client_currency' );
-				                    if( $client_currency != '' && $client_currency != get_option( 'woocommerce_currency' ) ) {
+				                    if ( $client_currency != '' && $client_currency != get_option( 'woocommerce_currency' ) ) {
 				                        $price = get_post_meta( $variation_id, '_price_' . $client_currency, true );
 				                        $wpml_multicurreny_enabled = 'yes';
 				                    }
 				                }
-				            } else if( $product_type == 'simple' ) {
-				                if( $custom_post == 1 ) {
+				            } else if ( $product_type == 'simple' ) {
+				                if ( $custom_post == 1 ) {
 				                    $client_currency = $woocommerce->session->get( 'client_currency' );
-				                    if( $client_currency != '' && $client_currency != get_option( 'woocommerce_currency' ) ) {
+				                    if ( $client_currency != '' && $client_currency != get_option( 'woocommerce_currency' ) ) {
 				                        $price = get_post_meta( $product_id, '_price_' . $client_currency, true );
 				                        $wpml_multicurreny_enabled = 'yes';
 				                    }
@@ -427,31 +466,28 @@ function is_bkap_multi_time_active() {
 				        }
 				    }
 				     
-				    if( $wpml_multicurreny_enabled == 'no' ) {
+				    if ( $wpml_multicurreny_enabled == 'no' ) {
     					if ( $product_type == 'variable' ) {
     						$price = get_post_meta( $variation_id, '_sale_price', true );
-    						if( $price == '' ) {
+    						if ( $price == '' ) {
     							$price = get_post_meta( $variation_id, '_regular_price', true );
     						}
-    					} elseif( $product_type == 'simple' ) {
+    					} elseif ( $product_type == 'simple' ) {
     						$price = get_post_meta( $product_id, '_sale_price', true );
-    						if( $price == '' ) {
+    						if ( $price == '' ) {
     							$price = get_post_meta( $product_id, '_regular_price', true );
     						}
     					}
 				    }
 				} else {
 					$prices = "";
-
-					if( is_array( $_POST['price'] ) ){
-						$price = array_sum( $_POST['price'] ) * $_POST[ 'quantity' ];
+					if ( is_array( $_POST['price'] ) ) {
+						$price 	= array_sum( $_POST['price'] ) * $_POST[ 'quantity' ];
 						$prices = implode(',', $_POST['price']);
-					}else{
+					} else {
 						$price = $_POST[ 'price' ] * $_POST[ 'quantity' ];	
 					}
-					
-				}
-			
+				}			
 				
 				if ( function_exists( 'is_bkap_deposits_active' ) && is_bkap_deposits_active() ) {
 					$_POST[ 'price' ] = $price;
@@ -461,7 +497,7 @@ function is_bkap_multi_time_active() {
 				    $total_price = $price;
 				    if ( function_exists( 'icl_object_id' ) ) {
 				        $custom_post = bkap_common::bkap_get_custom_post( $product_id, $variation_id, $product_type );
-				        if( $custom_post == 0 ) {
+				        if ( $custom_post == 0 ) {
 				            $total_price = apply_filters( 'wcml_raw_price_amount', $price );
 				        }
 				    }
@@ -471,8 +507,8 @@ function is_bkap_multi_time_active() {
 				    print( 'jQuery( "#total_multiple_price_calculated" ).val("' . $prices . '");' );
 				    
 				    // format the price
-				    $wc_price_args = bkap_common::get_currency_args();
-				    $formatted_price = wc_price( $total_price, $wc_price_args );
+				    $wc_price_args 		= bkap_common::get_currency_args();
+				    $formatted_price 	= wc_price( $total_price, $wc_price_args );
 					
 					// display the price on the front end product page
 					$display_price = get_option( 'book_price-label' ) . ' ' . $formatted_price;
@@ -481,48 +517,50 @@ function is_bkap_multi_time_active() {
 				}	
 			}
 			
-			/********************************************************
+			/**
 			 * Ajax fn run when time slots are selected
-			 *******************************************************/
+			 */
 			function bkap_multiple_time_slot() {
-				$current_date = $_POST['current_date'];
-				$post_id = $_POST['post_id'];
-				$time_drop_down = bkap_booking_process::get_time_slot($current_date,$post_id);
-			
-				$time_drop_down_array = explode("|",$time_drop_down);
-				$checkbox = "<label>".get_option('book_time-label').": </label><br>";
-				$i = 0;
-				foreach ($time_drop_down_array as $k => $v) {
-					$i++; 
-					if ($v != "") {
-						$checkbox .= "<input type='checkbox' id='timeslot_".$i."' name='time_slot[]' value='".$v."' onClick='multi_timeslot(this)'>".$v."</input><br>";
-					}
-				}
 				
+				$current_date 	= $_POST['current_date'];
+				$post_id 		= $_POST['post_id'];
+				$time_drop_down = bkap_booking_process::get_time_slot( $current_date, $post_id );
+			
+				$time_drop_down_array 	= explode( "|", $time_drop_down );
+				$checkbox 				= "<label>".get_option('book_time-label').": </label><br>";
+				$i 						= 0;
+
+				foreach ( $time_drop_down_array as $k => $v ) {
+					$i++; 
+					if ( $v != "" ) {
+						$checkbox .= "<div><label class=\"mul-button\"><input type='checkbox' id='timeslot_".$i."' name='time_slot[]' value='".$v."' onClick='multi_timeslot(this)'><b>".$v. "</b></input><br></label></div>";
+					}
+				}				
 				echo $checkbox;
 				?>
 				<script type="text/javascript">
-
-					function multi_timeslot(chk) {
+					function multi_timeslot( chk ) {
+						
 						var values = new Array();
-						jQuery.each(jQuery("input[name='time_slot[]']:checked"), function() {
-							  values.push(jQuery(this).val());
+						jQuery.each( jQuery( "input[name='time_slot[]']:checked" ), function() {
+							  values.push( jQuery(this).val() );
 						});
+
 						var slots_selected = values.length;
-						jQuery("#wapbk_number_of_timeslots").val(slots_selected);
+						jQuery("#wapbk_number_of_timeslots").val( slots_selected );
 						// call the single day price calculation fn as the price needs to be calculated whenever a time slot is selected/de-selected
 						bkap_single_day_price();
-						var sold_individually = jQuery("#wapbk_sold_individually").val();
-						if (slots_selected > 0) {
+						
+						var sold_individually = jQuery( "#wapbk_sold_individually" ).val();
+						if ( slots_selected > 0 ) {
+
 							jQuery( ".single_add_to_cart_button" ).show();
-							if(sold_individually == "yes") {
+							if ( sold_individually == "yes" ) {
 								jQuery( ".quantity" ).hide();
-							}
-							else {
+							} else {
 								jQuery( ".quantity" ).show();
 							}
-						}
-						else {
+						} else {
 							jQuery( ".single_add_to_cart_button" ).hide();
 							jQuery( ".quantity" ).hide()
 						}
@@ -532,19 +570,21 @@ function is_bkap_multi_time_active() {
 				die();
 			}
 			
-			/******************************************************
+			/**
 			 * calculate prices when products are added to the cart
-			 *****************************************************/
-			function multiple_time_add_cart_item_data($cart_arr, $product_id, $variation_id) {
-				$booking_settings = get_post_meta($product_id, 'woocommerce_booking_settings', true);
-				$time_slots = "";
-				$product = wc_get_product($product_id);
-				$product_type = $product->get_type();
-				if(isset($booking_settings['booking_enable_time']) && $booking_settings['booking_enable_time'] == 'on') {
-					if(isset($booking_settings['booking_enable_multiple_time']) && $booking_settings['booking_enable_multiple_time'] == 'multiple') {
+			 */
+			function multiple_time_add_cart_item_data( $cart_arr, $product_id, $variation_id ) {
+				
+				$booking_settings 	= get_post_meta($product_id, 'woocommerce_booking_settings', true);
+				$time_slots 		= "";
+				$product 			= wc_get_product($product_id);
+				$product_type 		= $product->get_type();
+				
+				if ( isset( $booking_settings['booking_enable_time'] ) && $booking_settings['booking_enable_time'] == 'on' ) {
+					if ( isset( $booking_settings['booking_enable_multiple_time'] ) && $booking_settings['booking_enable_multiple_time'] == 'multiple' ) {
 						$time_multiple_disp = $_POST['time_slot'];
-						$i = 0;
-						foreach($time_multiple_disp as $k => $v) {
+						$i 					= 0;
+						foreach( $time_multiple_disp as $k => $v ) {
 							$time_slots .= "<br>".$v;
 							$i++;
 						}
@@ -554,62 +594,67 @@ function is_bkap_multi_time_active() {
 				return $cart_arr;
 			}
 			
-			/***********************************************************
+			/**
 			 * Add the multiple time slots on the cart and checkout page
-			 **********************************************************/
+			 */
 			function multiple_time_get_item_data( $other_data, $cart_item ) {
-				if (isset($cart_item['bkap_booking'])) :
-					foreach ($cart_item['bkap_booking'] as $booking) :
-						$booking_settings = get_post_meta($cart_item['product_id'], 'woocommerce_booking_settings', true);	
-						$saved_settings = json_decode(get_option('woocommerce_booking_global_settings'));
-						if(isset($saved_settings) && $saved_settings->booking_time_format != '') {
+				if ( isset( $cart_item['bkap_booking'] ) ) :
+					foreach ( $cart_item['bkap_booking'] as $booking ) :
+						
+						$booking_settings 	= get_post_meta( $cart_item['product_id'], 'woocommerce_booking_settings', true );	
+						$saved_settings 	= json_decode( get_option('woocommerce_booking_global_settings' ) );
+						
+						if ( isset( $saved_settings ) && $saved_settings->booking_time_format != '' ) {
 							$time_format = $saved_settings->booking_time_format;
-						}
-						else {
+						} else {
 							$time_format = '';
 						}
-						if ($time_format == "" OR $time_format == "NULL") {
+
+						if ( $time_format == "" OR $time_format == "NULL" ) {
 							$time_format = "12";
-						}	
+						}
+
 						$time_slot_to_display = '';
-						if (isset($booking['time_slot'])) {
+						if ( isset( $booking['time_slot'] ) ) {
 							$time_slot_to_display = $booking['time_slot'];
 						}
-						if(isset($booking_settings['booking_enable_time']) && $booking_settings['booking_enable_time'] == 'on') {
-							if(isset($booking_settings['booking_enable_multiple_time']) && $booking_settings['booking_enable_multiple_time'] == 'multiple') {
-								$time_exploded = explode("<br>", $time_slot_to_display);
-								array_shift($time_exploded);
+
+						if ( isset( $booking_settings['booking_enable_time'] ) && $booking_settings['booking_enable_time'] == 'on' ) {
+							if ( isset( $booking_settings['booking_enable_multiple_time'] ) && $booking_settings['booking_enable_multiple_time'] == 'multiple' ) {
+
+								$time_exploded = explode( "<br>", $time_slot_to_display );
+								array_shift( $time_exploded );
 								$time_slot = '';
-								foreach($time_exploded as $k => $v) {
+								
+								foreach( $time_exploded as $k => $v ) {
+									
 									$time_explode = explode("-",$v);
-									if ($time_format == "" OR $time_format == "NULL") {
+									if ( $time_format == "" OR $time_format == "NULL" ) {
 										$time_format = "12";
 									}
-									if ($time_format == '12') {
-										$from_time = date('h:i A', strtotime($time_explode[0]));
-										if (isset($time_explode[1])) {
-											$to_time = date('h:i A', strtotime($time_explode[1]));
-										}
-										else {
+
+									if ( $time_format == '12' ) {
+										$from_time = date('h:i A', strtotime( $time_explode[0] ) );
+										if ( isset( $time_explode[1] ) ) {
+											$to_time = date( 'h:i A', strtotime( $time_explode[1] ) );
+										} else {
 											$to_time = "";
 										}	
-									}	
-									else {	
-										$from_time = date('H:i', strtotime($time_explode[0]));
-										if (isset($time_explode[1])) {
-											$to_time = date('H:i', strtotime($time_explode[1]));
-										}
-										else {
+									} else {	
+										$from_time = date('H:i', strtotime( $time_explode[0] ) );
+										if ( isset( $time_explode[1] ) ) {
+											$to_time = date( 'H:i', strtotime( $time_explode[1] ) );
+										} else {
 											$to_time = "";
 										}
 									}
-									if($to_time != '') {	
+									if ( $to_time != '' ) {	
 										$time_slot .= "<br>".$from_time.' - '.$to_time;
-									}
-									else {
+									} else {
 										$time_slot .= "<br>".$from_time;
 									}
 								}
+
 								$name = get_option('book_item-cart-time');
 								$other_data[] = array(
 										'name'    => $name,
@@ -621,35 +666,40 @@ function is_bkap_multi_time_active() {
 				endif;
 				return $other_data;
 			}
-			/**************************************************************
+
+			/**
 			 * Add time slots as order item meta
-			 *************************************************************/
-			function multiple_time_order_item_meta( $values,$order) {
+			 */
+			function multiple_time_order_item_meta( $values,$order ) {
 				global $wpdb;
-				//print_r($values);exit;
-				$product_id = $values['product_id'];
-				$quantity = $values['quantity'];
-				$booking = $values['bkap_booking'];
-				$booking_settings = get_post_meta($product_id,'woocommerce_booking_settings',true);
-				$saved_settings = json_decode(get_option('woocommerce_booking_global_settings'));
-				if(isset($saved_settings) && $saved_settings->booking_time_format != '') {
+				
+				$product_id 		= $values['product_id'];
+				$quantity 			= $values['quantity'];
+				$booking 			= $values['bkap_booking'];
+				$booking_settings 	= get_post_meta( $product_id, 'woocommerce_booking_settings', true );
+				$saved_settings 	= json_decode( get_option( 'woocommerce_booking_global_settings' ) );
+				
+				if ( isset( $saved_settings ) && $saved_settings->booking_time_format != '') {
 					$time_format = $saved_settings->booking_time_format;
-				}
-				else {
+				} else {
 					$time_format = '';
 				}
-				if ($time_format == "" OR $time_format == "NULL") {
+
+				if ( $time_format == "" OR $time_format == "NULL" ) {
 					$time_format = "12";
 				}
-				$date = '';
-				$time_slot_to_display = '';
-				// This variable contains all the time slots in the G:i format to be saved in the hidden field in the item meta table
-				$meta_data_format = '';
 				
-				$order_item_id = $order->order_item_id;
-				$order_id = $order->order_id;
-				if(isset($booking_settings['booking_enable_time']) && $booking_settings['booking_enable_time'] == 'on') {
-					if(isset($booking_settings['booking_enable_multiple_time']) && $booking_settings['booking_enable_multiple_time'] == 'multiple') {
+				$date 					= '';
+				$time_slot_to_display 	= '';
+				// This variable contains all the time slots in the G:i format to be saved in the hidden field in the item meta table
+				$meta_data_format 		= '';
+				
+				$order_item_id 			= $order->order_item_id;
+				$order_id 				= $order->order_id;
+
+				if ( isset( $booking_settings['booking_enable_time'] ) && $booking_settings['booking_enable_time'] == 'on' ) {
+
+					if ( isset( $booking_settings['booking_enable_multiple_time'] ) && $booking_settings['booking_enable_multiple_time'] == 'multiple' ) {
 					    if ( array_key_exists( 'date', $booking[0] ) && $booking[0][ 'date' ] != "" ) {
 							$date = $booking[0]['date'];
 							//echo $date;
@@ -663,186 +713,199 @@ function is_bkap_multi_time_active() {
 						    wc_add_order_item_meta( $order_item_id, '_wapbk_booking_date', sanitize_text_field( $date_booking, true ) );
 						}
 						
-						if($booking[0]['time_slot'] != "") {
-							$time_slot = $booking[0]['time_slot'];
-							$hidden_date = $booking[0]['hidden_date'];
-							$time_exploded = explode("<br>", $time_slot);
+						if ( $booking[0]['time_slot'] != "" ) {
+							$time_slot 		= $booking[0]['time_slot'];
+							$hidden_date 	= $booking[0]['hidden_date'];
+							$time_exploded 	= explode( "<br>", $time_slot );
 							array_shift($time_exploded);
-							foreach($time_exploded as $k => $v) {
-								$time_explode = explode("-",$v);
-								$from_time = trim($time_explode[0]);
+							
+							foreach( $time_exploded as $k => $v ) {
+								$time_explode 	= explode( "-", $v );
+								$from_time 		= trim( $time_explode[0] );
 								
-								if (isset($time_explode[1])) {
-									$to_time = trim($time_explode[1]);
-								}
-								else {
+								if ( isset( $time_explode[1] ) ) {
+									$to_time = trim( $time_explode[1] );
+								} else {
 									$to_time = '';
 								}
-								if ($time_format == '12') {
-									$from_time = date('h:i A', strtotime($time_explode[0]));
-									if (isset($time_explode[1])) {
-										$to_time = date('h:i A', strtotime($time_explode[1]));
-									}
-									else {
+								
+								if ( $time_format == '12' ) {
+									$from_time = date( 'h:i A', strtotime( $time_explode[0] ) );
+									if ( isset( $time_explode[1] ) ) {
+										$to_time = date( 'h:i A', strtotime( $time_explode[1] ) );
+									} else {
 										$to_time = '';
 									}
 								}
-								if($to_time != '') {
+
+								if( $to_time != '' ) {
 									$time_slot_to_display .= $from_time.' - '.$to_time.",";
-								}
-								else {	
+								} else {	
 									$time_slot_to_display .= $from_time.",";
 								}
 																
-								$date_query = date('Y-m-d',strtotime($booking[0]['hidden_date']));
+								$date_query 		= date('Y-m-d',strtotime($booking[0]['hidden_date']));
 								//echo $date_query;exit;
-								$query_from_time = date('G:i', strtotime($time_explode[0]));
-								$meta_data_format .=   $query_from_time;
+								$query_from_time 	= date('G:i', strtotime($time_explode[0]));
+								$meta_data_format  .= $query_from_time;
 								
-								if (isset($time_explode[1])) {
-									$query_to_time = date('G:i', strtotime($time_explode[1]));
-									$meta_data_format .= ' - ' . $query_to_time . ',';
+								if ( isset( $time_explode[1] ) ) {
+									$query_to_time 		= date( 'G:i', strtotime( $time_explode[1] ) );
+									$meta_data_format  .= ' - ' . $query_to_time . ',';
 								} else {
-								    $meta_data_format .= ',';
+								    $meta_data_format  .= ',';
 								}
 								
-								if($query_to_time != '') {
+								if ( $query_to_time != '' ) {
+									
 									$query = "UPDATE `".$wpdb->prefix."booking_history`
-										SET available_booking = available_booking - ".$quantity."
-										WHERE post_id = '".$product_id."' AND
-										start_date = '".$date_query."' AND
-										from_time = '".$query_from_time."' AND
-										to_time = '".$query_to_time."' AND
-										total_booking > 0";
+												SET available_booking = available_booking - ".$quantity."
+												WHERE post_id = '".$product_id."' AND
+												start_date = '".$date_query."' AND
+												from_time = '".$query_from_time."' AND
+												to_time = '".$query_to_time."' AND
+												total_booking > 0";
 									$wpdb->query( $query );
+									
 									$order_select_query = "SELECT * FROM `".$wpdb->prefix."booking_history`
-											WHERE post_id = '".$product_id."' AND
-											start_date = '".$date_query."' AND
-											from_time = '".$query_from_time."' AND
-											to_time = '".$query_to_time."' AND
-											status = ''";
+															WHERE post_id = '".$product_id."' AND
+															start_date = '".$date_query."' AND
+															from_time = '".$query_from_time."' AND
+															to_time = '".$query_to_time."' AND
+															status = ''";
 									$order_results = $wpdb->get_results( $order_select_query );
+									
 									foreach($order_results as $k => $v) {
 										$details[$product_id][] = $v;
 									}
-								}
-								else {
+								} else {
 									$query = "UPDATE `".$wpdb->prefix."booking_history`
-										SET available_booking = available_booking - ".$quantity."
-										WHERE post_id = '".$product_id."' AND
-										start_date = '".$date_query."' AND
-										from_time = '".$query_from_time."' AND
-										total_booking > 0";
+												SET available_booking = available_booking - ".$quantity."
+												WHERE post_id = '".$product_id."' AND
+												start_date = '".$date_query."' AND
+												from_time = '".$query_from_time."' AND
+												total_booking > 0";
 									$wpdb->query( $query );
+									
 									$order_select_query = "SELECT * FROM `".$wpdb->prefix."booking_history`
-											WHERE post_id = '".$product_id."' AND
-											start_date = '".$date_query."' AND
-											from_time = '".$query_from_time."' AND
-											status = ''";
+															WHERE post_id = '".$product_id."' AND
+															start_date = '".$date_query."' AND
+															from_time = '".$query_from_time."' AND
+															status = ''";
 									$order_results = $wpdb->get_results( $order_select_query );
-									foreach($order_results as $k => $v) {
+									
+									foreach( $order_results as $k => $v ) {
 										$details[$product_id][] = $v;
 									}
-								}
-								//print_r($order_results);
+								} 
+
 								$i = 0;
-								foreach($order_results as $k => $v) {	
-									$booking_id = $order_results[$i]->id;
-									$order_query = "INSERT INTO `".$wpdb->prefix."booking_order_history`
-										(order_id,booking_id)
-										VALUES (
-										'".$order_id."',
-										'".$booking_id."' )";
+								
+								foreach( $order_results as $k => $v ) {	
+									$booking_id 	= $order_results[$i]->id;
+									$order_query 	= "INSERT INTO `".$wpdb->prefix."booking_order_history`
+														(order_id,booking_id)
+														VALUES (
+														'".$order_id."',
+														'".$booking_id."' )";
 									$wpdb->query( $order_query );
 									$i++;	
 								}
 							}
-							$time_slot_to_display = trim($time_slot_to_display, ",");
-							$meta_data_format = trim( $meta_data_format, ',' );
+							$time_slot_to_display 	= trim( $time_slot_to_display, "," );
+							$meta_data_format 		= trim( $meta_data_format, ',' );
 							wc_add_order_item_meta( $order_item_id, get_option('book_item-meta-time'), $time_slot_to_display, true );
-							wc_add_order_item_meta( $order_item_id,  '_wapbk_time_slot', $meta_data_format, true );
+							wc_add_order_item_meta( $order_item_id, '_wapbk_time_slot', $meta_data_format, true );
 						}
-						$book_global_settings = json_decode(get_option('woocommerce_booking_global_settings'));
-						$booking_settings = get_post_meta($product_id, 'woocommerce_booking_settings' , true);
+
 						$lockout_settings = '';
-						if (isset($booking_settings['booking_time_settings'][$hidden_date])) {
+						if ( isset( $booking_settings['booking_time_settings'][$hidden_date] ) ) {
 							$lockout_settings = $booking_settings['booking_time_settings'][$hidden_date];
 						}
-						if($lockout_settings == '') {
+
+						if ( $lockout_settings == '' ) {
 							$week_day = date('l',strtotime($hidden_date));
-							$weekday = array_search($week_day,$this->weekdays);
+							$weekday  = array_search($week_day,$this->weekdays);
 							$lockout_settings = $booking_settings['booking_time_settings'][$weekday];
 						}
-						$from_lockout_time = explode(":",$query_from_time);
-						$from_hours = $from_lockout_time[0];
-						$from_minute = $from_lockout_time[1];
-						if($query_to_time != '') {
-							$to_lockout_time = explode(":",$query_to_time);
-							$to_hours = $to_lockout_time[0];
-							$to_minute = $to_lockout_time[1];
+
+						$from_lockout_time 	= explode( ":",$query_from_time );
+						$from_hours 		= $from_lockout_time[0];
+						$from_minute 		= $from_lockout_time[1];
+						
+						if ( $query_to_time != '') {
+							$to_lockout_time 	= explode(":",$query_to_time);
+							$to_hours 			= $to_lockout_time[0];
+							$to_minute 			= $to_lockout_time[1];
+						} else {
+							$to_hours 	= '';
+							$to_minute 	= '';
 						}
-						else {
-							$to_hours = '';
-							$to_minute = '';
-						}
-						//print_r($lockout_settings);
-						//exit;
-						foreach($lockout_settings as $l_key => $l_value) {
-							if($l_value['from_slot_hrs'] == $from_hours && $l_value['from_slot_min'] == $from_minute && $l_value['to_slot_hrs'] == $to_hours && $l_value['to_slot_min'] == $to_minute) {
+
+						foreach ( $lockout_settings as $l_key => $l_value ) {
+							if ( $l_value['from_slot_hrs'] == $from_hours
+								&& $l_value['from_slot_min'] == $from_minute
+								&& $l_value['to_slot_hrs'] == $to_hours
+								&& $l_value['to_slot_min'] == $to_minute
+							) {
 								$global_timeslot_lockout = $l_value['global_time_check'];
 							}
 						}
 						
-						if($book_global_settings->booking_global_timeslot == 'on' || $global_timeslot_lockout == 'on') {
-							$args = array( 'post_type' => 'product', 'posts_per_page' => -1 );
-							$product = query_posts( $args );
+						if ( $global_settings->booking_global_timeslot == 'on' || $global_timeslot_lockout == 'on' ) {
+							$args 		= array( 'post_type' => 'product', 'posts_per_page' => -1 );
+							$product 	= query_posts( $args );
 							
 							$product_ids = array();
-							foreach($product as $k => $v) {
+							foreach( $product as $k => $v ) {
 								$product_ids[] = $v->ID;
 							}
-							foreach($product_ids as $k => $v) {
-								$booking_settings = get_post_meta($v, 'woocommerce_booking_settings' , true);
-								if(isset($booking_settings['booking_enable_time']) && $booking_settings['booking_enable_time'] == 'on') {
-									//echo "<pre>";print_r($details);echo "</pre>";exit;
-									if(!array_key_exists($v,$details)) {
-										foreach($details as $key => $val) {
-											foreach($val as $v_key => $v_val) {
-												$booking_settings = get_post_meta($v, 'woocommerce_booking_settings', true);
-												//echo"<pre>";print_r($v_val);echo"</pre>";exit;
+
+							foreach( $product_ids as $k => $v ) {
+								
+								$booking_settings = get_post_meta( $v, 'woocommerce_booking_settings', true );
+
+								if ( isset( $booking_settings['booking_enable_time'] ) && $booking_settings['booking_enable_time'] == 'on' ) {
+									
+									if ( !array_key_exists( $v, $details ) ) {
+
+										foreach ( $details as $key => $val ) {
+
+											foreach( $val as $v_key => $v_val ) {
+
 												$start_date = $v_val->start_date;
-												$from_time = $v_val->from_time;
-												$to_time = $v_val->to_time;
-												if($to_time != "") {
+												$from_time 	= $v_val->from_time;
+												$to_time 	= $v_val->to_time;
+												
+												if ( $to_time != "" ) {
 													$query = "UPDATE `".$wpdb->prefix."booking_history`
-													SET available_booking = available_booking - ".$quantity."
-													WHERE post_id = '".$v."' AND
-													start_date = '".$date_query."' AND
-													from_time = '".$from_time."' AND
-													to_time = '".$to_time."' ";
+																SET available_booking = available_booking - ".$quantity."
+																WHERE post_id = '".$v."' AND
+																start_date = '".$date_query."' AND
+																from_time = '".$from_time."' AND
+																to_time = '".$to_time."' ";
 													$updated = $wpdb->query( $query );
-													if($updated == 0) {
-														if($v_val->weekday == '') {
-															$week_day = date('l',strtotime($date_query));
-															$weekday = array_search($week_day,$this->weekdays);
-															//echo $weekday;exit;
-														}
-														else {	
+													
+													if ( $updated == 0 ) {
+														if ( $v_val->weekday == '' ) {
+															$week_day 	= date( 'l', strtotime( $date_query ) );
+															$weekday 	= array_search( $week_day, $this->weekdays );
+														} else {	
 															$weekday = $v_val->weekday;
 														}
 														$query = "SELECT * FROM `".$wpdb->prefix."booking_history`
-															WHERE post_id = '".$v."'
-															AND weekday = '".$weekday."'
-															AND start_date = '0000-00-00'";
-															//echo $query;exit;
+																	WHERE post_id = '".$v."'
+																	AND weekday = '".$weekday."'
+																	AND start_date = '0000-00-00'";
 														$results = $wpdb->get_results( $query );
-														if (!$results) {
+
+														if ( !$results ) {
 															break;
-														}
-														else {
-															//print_r($results);exit;
-															foreach($results as $r_key => $r_val) {
-																if($from_time == $r_val->from_time && $to_time == $r_val->to_time) {
+														} else {
+															
+															foreach ( $results as $r_key => $r_val ) {
+																if ( $from_time == $r_val->from_time && $to_time == $r_val->to_time ) {
+																	
 																	$available_booking = $r_val->available_booking - $quantity;
 																	$query_insert = "INSERT INTO `".$wpdb->prefix."booking_history`
 																		(post_id,weekday,start_date,from_time,to_time,total_booking,available_booking)
@@ -856,8 +919,7 @@ function is_bkap_multi_time_active() {
 																	'".$available_booking."' )";
 																	//echo $query_insert;exit;
 																	$wpdb->query( $query_insert );
-																}
-																else {
+																} else {
 																	$query_insert = "INSERT INTO `".$wpdb->prefix."booking_history`
 																	(post_id,weekday,start_date,from_time,to_time,total_booking,available_booking)
 																	VALUES (
@@ -873,35 +935,36 @@ function is_bkap_multi_time_active() {
 															}
 														}
 													}
-												}
-												else {
+												} else {
 													$query = "UPDATE `".$wpdb->prefix."booking_history`
-													SET available_booking = available_booking - ".$quantity."
-													WHERE post_id = '".$v."' AND
-													start_date = '".$date_query."' AND
-													from_time = '".$from_time."'
-													AND to_time = ''";
-													//$wpdb->query( $query );
+																SET available_booking = available_booking - ".$quantity."
+																WHERE post_id = '".$v."' AND
+																start_date = '".$date_query."' AND
+																from_time = '".$from_time."'
+																AND to_time = ''";
 													$updated = $wpdb->query( $query );
-													if($updated == 0) {
-														if($v_val->weekday == '') {
-															$week_day = date('l',strtotime($date_query));
-															$weekday = array_search($week_day,$this->weekdays);
-															//echo $weekday;exit;
-														}
-														else {
+
+													if ( $updated == 0 ) {
+														
+														if ( $v_val->weekday == '' ) {
+															$week_day 	= date( 'l',strtotime( $date_query ) );
+															$weekday 	= array_search( $week_day, $this->weekdays );
+														} else {
 															$weekday = $v_val->weekday;
 														}
+
 														$query = "SELECT * FROM `".$wpdb->prefix."booking_history`
-															WHERE post_id = '".$v."'
-															AND weekday = '".$weekday."'
-															AND to_time = '' 
-															AND start_date = '0000-00-00'";
+																	WHERE post_id = '".$v."'
+																	AND weekday = '".$weekday."'
+																	AND to_time = '' 
+																	AND start_date = '0000-00-00'";
 														$results = $wpdb->get_results( $query );
-														if (!$results) break;
+														
+														if ( !$results ) break;
 														else {
-															foreach($results as $r_key => $r_val) {
-																if($from_time == $r_val->from_time) {
+															foreach( $results as $r_key => $r_val ) {
+																
+																if ( $from_time == $r_val->from_time ) {
 																	$available_booking = $r_val->available_booking - $quantity;
 																	$query_insert = "INSERT INTO `".$wpdb->prefix."booking_history`
 																		(post_id,weekday,start_date,from_time,total_booking,available_booking)
@@ -913,8 +976,7 @@ function is_bkap_multi_time_active() {
 																	'".$r_val->available_booking."',
 																	'".$available_booking."' )";
 																	$wpdb->query( $query_insert );
-																}
-																else {
+																} else {
 																	$query_insert = "INSERT INTO `".$wpdb->prefix."booking_history`
 																	(post_id,weekday,start_date,from_time,total_booking,available_booking)
 																	VALUES (
@@ -940,93 +1002,93 @@ function is_bkap_multi_time_active() {
 				}
 			}
 
-			/*****************************************************
+			/**
 			 * Quantity check for multiple time slots
-			 ****************************************************/
-			function multiple_time_slot_quantity_check($product_id,$booking_date,$booking_time_slot,$quantity) {
+			 */
+			function multiple_time_slot_quantity_check( $product_id, $booking_date, $booking_time_slot, $quantity ) {
+				
 				global $woocommerce, $wpdb;
-				$quantity_check_pass = 'yes';
-				$booking_settings = get_post_meta($product_id , 'woocommerce_booking_settings' , true);
-				$saved_settings = json_decode(get_option('woocommerce_booking_global_settings'));
-				if(isset($saved_settings) && $saved_settings->booking_time_format != '') {
+				
+				$quantity_check_pass 	= 'yes';
+				$booking_settings 		= get_post_meta($product_id , 'woocommerce_booking_settings' , true);
+				$saved_settings 		= json_decode(get_option('woocommerce_booking_global_settings'));
+				
+				if ( isset( $saved_settings ) && $saved_settings->booking_time_format != '' ) {
 					$time_format = $saved_settings->booking_time_format;
-				}
-				else {
+				} else {
 					$time_format = '';
 				}
-				if ($time_format == "" OR $time_format == "NULL") {
+
+				if ( $time_format == "" OR $time_format == "NULL" ) {
 					$time_format = "12";
 				}
 				
-				if($booking_settings['booking_enable_time'] == 'on') {
-					if($booking_settings['booking_enable_multiple_time'] == 'multiple') {
-						$time_exploded = explode("<br>",$booking_time_slot);
-						foreach($time_exploded as $k => $v) {
-							if($v != "") {
-								$time_explode = explode("-",$v);
-								$from_time = date('G:i', strtotime($time_explode[0]));
-								if(isset($time_explode[1])) {
+				if ( $booking_settings['booking_enable_time'] == 'on' ) {
+					
+					if ( $booking_settings['booking_enable_multiple_time'] == 'multiple' ) {
+						$time_exploded = explode( "<br>",$booking_time_slot );
+						
+						foreach ( $time_exploded as $k => $v) {
+							if ( $v != "" ) {
+								$time_explode 	= explode( "-",$v );
+								$from_time 		= date( 'G:i', strtotime( $time_explode[0] ) );
+								if ( isset( $time_explode[1] ) ) {
 									$to_time = date('G:i', strtotime($time_explode[1]));
-								}
-								else {
+								} else {
 									$to_time = '';
 								}
-								if($to_time != '') {
-									$query = "SELECT total_booking, available_booking, start_date FROM `".$wpdb->prefix."booking_history`
+
+								if ( $to_time != '' ) {
+									$query 	= "SELECT total_booking, available_booking, start_date FROM `".$wpdb->prefix."booking_history`
 												WHERE post_id = '".$product_id."'
 												AND start_date = '".$booking_date."'
 												AND from_time = '".$from_time."'
 												AND to_time = '".$to_time."' ";
 									$results = $wpdb->get_results( $query );
-								}
-								else {
+								} else {
 									$query = "SELECT total_booking, available_booking, start_date FROM `".$wpdb->prefix."booking_history`
 												WHERE post_id = '".$product_id."'
 												AND start_date = '".$booking_date."'
 												AND from_time = '".$from_time."'";
 									$results = $wpdb->get_results( $query );
 								}
-								if (!$results) break;
+								if ( !$results ) break;
 								else {
 									$post_title = get_post($product_id);
-									if($booking_time_slot != "") {
+									if ( $booking_time_slot != "" ) {
 										// if current format is 12 hour format, then convert the times to 24 hour format to check in database
-										if ($time_format == '12') {
-											$from_time = date('h:i A', strtotime($time_explode[0]));
-											if(isset($time_explode[1])) {
-												$to_time = date('h:i A', strtotime($time_explode[1]));
-											}
-											else {
+										if ( $time_format == '12' ) {
+											$from_time = date( 'h:i A', strtotime( $time_explode[0] ) );
+											if ( isset( $time_explode[1] ) ) {
+												$to_time = date( 'h:i A', strtotime( $time_explode[1] ) );
+											} else {
 												$to_time = '';
 											}
-											if($to_time != '') {
+											if ( $to_time != '' ) {
 												$time_slot_to_display = $from_time.' - '.$to_time;
+											} else {
+												$time_slot_to_display = $from_time;
 											}
-											else {
+										} else if ( $time_format == '24' ) {
+											$from_time = date( 'H:i ', strtotime( $time_explode[0] ) );
+											if ( isset( $time_explode[1] ) ) {
+												$to_time = date( 'H:i ', strtotime( $time_explode[1] ) );
+											} else {
+												$to_time = '';
+											}
+											if ( $to_time != '' ) {
+												$time_slot_to_display = $from_time.' - '.$to_time;
+											} else {
 												$time_slot_to_display = $from_time;
 											}
 										}
-										else if ($time_format == '24') {
-											$from_time = date('H:i ', strtotime($time_explode[0]));
-											if(isset($time_explode[1])) {
-												$to_time = date('H:i ', strtotime($time_explode[1]));
-											}
-											else {
-												$to_time = '';
-											}
-											if($to_time != '') {
-												$time_slot_to_display = $from_time.' - '.$to_time;
-											}
-											else {
-												$time_slot_to_display = $from_time;
-											}
-										}
-										if( $results[0]->available_booking > 0 && $results[0]->available_booking < $quantity) {
+
+										if ( $results[0]->available_booking > 0 && $results[0]->available_booking < $quantity ) {
+
 											$message = $post_title->post_title.bkap_get_book_t('book.limited-booking-msg1') .$results[0]->available_booking.bkap_get_book_t('book.limited-booking-msg2').$time_slot_to_display.'.';
 											wc_add_notice( $message, $notice_type = 'error');
 											$quantity_check_pass = 'no';
-										}
-										elseif ( $results[0]->total_booking > 0 && $results[0]->available_booking == 0 ) {
+										} elseif ( $results[0]->total_booking > 0 && $results[0]->available_booking == 0 ) {
 											$message = bkap_get_book_t('book.no-booking-msg1').$post_title->post_title.bkap_get_book_t('book.no-booking-msg2').$time_slot_to_display.bkap_get_book_t('book.no-booking-msg3');
 											wc_add_notice( $message, $notice_type = 'error');
 											$quantity_check_pass = 'no';
@@ -1040,74 +1102,93 @@ function is_bkap_multi_time_active() {
 				return $quantity_check_pass;
 			}
 			
-			/**************************************************************
+			/**
 			 * Quantity check on the product page
-			 *************************************************************/
-			function multiple_time_quantity_prod($POST,$post_id) {
+			 */
+			function multiple_time_quantity_prod( $POST, $post_id ) {
+
 				global $woocommerce,$wpdb;
+				
 				$date_check = date('Y-m-d', strtotime($POST['wapbk_hidden_date']));
 				
-				if (isset($POST['quantity'])) {
+				if ( isset( $POST['quantity'] ) ) {
 					$item_quantity = $POST['quantity'];
-				}
-				else {
+				} else {
 					$item_quantity = 1;
 				}
+
 				$time_slot_str = '';
-				foreach ($POST['time_slot'] as $k => $v) {
+				
+				foreach( $POST['time_slot'] as $k => $v ) {
 					$time_slot_str .= $v . "<br>"; 
 				}
 				//check if the same product has been added to the cart for the same dates
 				foreach ( $woocommerce->cart->get_cart() as $cart_item_key => $values ) {
-					$booking = $values['bkap_booking'];
-					$quantity = $values['quantity'];
-					$product_id = $values['product_id'];
+					$booking 			= $values['bkap_booking'];
+					$quantity 			= $values['quantity'];
+					$product_id 		= $values['product_id'];
 					$prod_time_slot_str = "";
-					if (isset($booking[0]['time_slot'])) {
-						$prod_time_slot = explode("<br>",$booking[0]['time_slot']); 	
+
+					if ( isset( $booking[0]['time_slot'] ) ) {
+
+						$prod_time_slot 	= explode( "<br>", $booking[0]['time_slot'] ); 	
 						$prod_time_slot_str = '';
-						foreach ($prod_time_slot as $k => $v) {
-							if ($v != "") {
+						foreach ( $prod_time_slot as $k => $v ) {
+							if ( $v != "" ) {
 								$prod_time_slot_str .= $v . "<br>";
 							}
 						} 
 					}
-					if ($product_id == $post_id && $booking[0]['hidden_date'] == $POST['wapbk_hidden_date'] && $prod_time_slot_str == $time_slot_str) {
+					if ( $product_id == $post_id
+						&& $booking[0]['hidden_date'] == $POST['wapbk_hidden_date']
+						&& $prod_time_slot_str == $time_slot_str
+					) {
 						$item_quantity += $quantity;
 					}
 				}
-				$quantity_check_pass = multiple_time_slot::multiple_time_slot_quantity_check($post_id,$date_check,$time_slot_str,$item_quantity);
+
+				$quantity_check_pass = multiple_time_slot::multiple_time_slot_quantity_check( $post_id, $date_check, $time_slot_str, $item_quantity );
 				return $quantity_check_pass;
 			}
-			/*************************************************************
+
+			/**
 			 * Quantity check on the cart and checkout page
-			 ************************************************************/
-			function multiple_time_quantity_check($value) {
-				$date_check = date('Y-m-d', strtotime($value['bkap_booking'][0]['hidden_date']));
-				
-				$quantity_check_pass = multiple_time_slot::multiple_time_slot_quantity_check($value['product_id'],$date_check,$value['bkap_booking'][0]['time_slot'],$value['quantity']);
+			 */
+			function multiple_time_quantity_check( $value ) {
+
+				$bkap_booking = $value['bkap_booking'][0];
+				$date_check 			= date( 'Y-m-d', strtotime( $bkap_booking['hidden_date'] ) );				
+				$quantity_check_pass 	= multiple_time_slot::multiple_time_slot_quantity_check( $value['product_id'], $date_check, $bkap_booking['time_slot'], $value['quantity'] );
 				
 			}
-			/*****************************************************
+
+			/**
 			 * Woocommerce cancel order
-			 ****************************************************/
-			function bkap_cancel_order($order_id,$item_value,$booking_id) {
+			 */
+			function bkap_cancel_order( $order_id, $item_value, $booking_id ) {
+				
 				global $wpdb;
-				$product_id = $item_value['product_id'];
-				$quantity = $item_value['qty'];
-				$booking_settings = get_post_meta($product_id, 'woocommerce_booking_settings', true);
-				if($booking_settings['booking_enable_time'] == 'on') {
-					if($booking_settings['booking_enable_multiple_time'] == 'multiple') {
-						$select_data_query = "SELECT * FROM `".$wpdb->prefix."booking_history`
-											WHERE id='".$booking_id."'";
-						$results_data = $wpdb->get_results ( $select_data_query );
-						$j=0;
-						foreach($results_data as $k => $v) {
+				$product_id 		= $item_value['product_id'];
+				$quantity 			= $item_value['qty'];
+				$booking_settings 	= get_post_meta($product_id, 'woocommerce_booking_settings', true);
+				
+				if ( $booking_settings['booking_enable_time'] == 'on' ) {
+					if ( $booking_settings['booking_enable_multiple_time'] == 'multiple' ) {
+						
+						$select_data_query 	= "SELECT * FROM `".$wpdb->prefix."booking_history`
+												WHERE id='".$booking_id."'";
+						$results_data 		= $wpdb->get_results ( $select_data_query );
+						
+						$j = 0;
+						
+						foreach( $results_data as $k => $v ) {
+							
 							$start_date = $results_data[$j]->start_date;
-							$from_time = $results_data[$j]->from_time;
-							$to_time = $results_data[$j]->to_time;
-							if($from_time != '' && $to_time != '' || $from_time != '') {
-								if($to_time != '') {
+							$from_time 	= $results_data[$j]->from_time;
+							$to_time 	= $results_data[$j]->to_time;
+							
+							if ( $from_time != '' && $to_time != '' || $from_time != '' ) {
+								if ( $to_time != '' ) {
 									$query = "UPDATE `".$wpdb->prefix."booking_history`
 												SET available_booking = available_booking + ".$quantity."
 												WHERE 
@@ -1117,15 +1198,14 @@ function is_bkap_multi_time_active() {
 												to_time = '".$to_time."' AND 
 												post_id = '".$product_id."'";
 											
-								}
-								else {
+								} else {
 									$query = "UPDATE `".$wpdb->prefix."booking_history`
 												SET available_booking = available_booking + ".$quantity."
 												WHERE 
-											id = '".$booking_id."' AND
-											start_date = '".$start_date."' AND
-											from_time = '".$from_time."' AND 
-											post_id = '".$product_id."'";
+												id = '".$booking_id."' AND
+												start_date = '".$start_date."' AND
+												from_time = '".$from_time."' AND 
+												post_id = '".$product_id."'";
 											
 								}
 								$wpdb->query( $query );
