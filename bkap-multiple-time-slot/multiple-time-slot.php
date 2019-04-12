@@ -90,7 +90,7 @@ function is_bkap_multi_time_active() {
 				add_action('bkap_order_status_cancelled', 		array( &$this, 'bkap_cancel_order' ), 10, 3 );
 				add_action('bkap_add_submenu',					array( &$this, 'multiple_timeslot_menu' ) );
 				// Display multiple time slot price for single day bookings
-				add_action('bkap_display_updated_addon_price', 	array( &$this, 'show_multiple_time_price' ), 10, 3 );
+				add_action('bkap_display_updated_addon_price', 	array( &$this, 'show_multiple_time_price' ), 10, 7 );
 				// print hidden field for number of slots selected
 				add_action('bkap_print_hidden_fields', 			array( &$this, 'multiple_print_fields' ), 10, 2 );
 				// Ajax calls
@@ -430,11 +430,9 @@ function is_bkap_multi_time_active() {
 			/**
 			 * Calculate the pridct when time slots are selected
 			 */
-			function show_multiple_time_price( $product_id, $booking_date, $variation_id ) {
+			function show_multiple_time_price( $product_id, $booking_settings, $product, $booking_date, $variation_id, $gf_options, $resource_id ) {
 				
-				$product 			= wc_get_product( $product_id );
 				$product_type 		= $product->get_type();
-				$booking_settings 	= get_post_meta( $product_id, 'woocommerce_booking_settings', true );
 
 				if ( !isset( $_POST[ 'price' ] ) || ( isset( $_POST[ 'price' ] ) && $_POST[ 'price' ] == 0 ) ) {
 				    
@@ -489,6 +487,8 @@ function is_bkap_multi_time_active() {
 					}
 				}			
 				
+				$wp_send_json = array();
+
 				if ( function_exists( 'is_bkap_deposits_active' ) && is_bkap_deposits_active() ) {
 					$_POST[ 'price' ] = $price;
 				} else {
@@ -501,10 +501,14 @@ function is_bkap_multi_time_active() {
 				            $total_price = apply_filters( 'wcml_raw_price_amount', $price );
 				        }
 				    }
-				    print( 'jQuery( "#total_price_calculated" ).val(' . $total_price . ');' );
+					//print( 'jQuery( "#total_price_calculated" ).val(' . $total_price . ');' );
+					$wp_send_json['total_price_calculated'] = $total_price;
 				    // save the price in a hidden field to be used later
-				    print( 'jQuery( "#bkap_price_charged" ).val(' . $total_price . ');' );
-				    print( 'jQuery( "#total_multiple_price_calculated" ).val("' . $prices . '");' );
+					//print( 'jQuery( "#bkap_price_charged" ).val(' . $total_price . ');' );
+					$wp_send_json['bkap_price_charged'] = $total_price;
+					
+				  //  print( 'jQuery( "#total_multiple_price_calculated" ).val("' . $prices . '");' );
+					$wp_send_json['total_multiple_price_calculated'] = $prices;
 				    
 				    // format the price
 				    $wc_price_args 		= bkap_common::get_currency_args();
@@ -512,8 +516,11 @@ function is_bkap_multi_time_active() {
 					
 					// display the price on the front end product page
 					$display_price = get_option( 'book_price-label' ) . ' ' . $formatted_price;
-					print( 'jQuery( "#bkap_price" ).html( "' . addslashes( $display_price ) . '");' );
-					die();
+					//print( 'jQuery( "#bkap_price" ).html( "' . addslashes( $display_price ) . '");' );
+					$wp_send_json['bkap_price'] = addslashes( $display_price );
+
+					//die();
+					wp_send_json($wp_send_json);
 				}	
 			}
 			
