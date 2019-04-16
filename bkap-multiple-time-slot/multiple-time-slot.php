@@ -3,16 +3,16 @@
  * Plugin Name: Multiple Time Slot Addon
  * Plugin URI: https://www.tychesoftwares.com/store/premium-plugins/multiple-time-slot-addon-woocommerce-booking-appointment-plugin/
  * Description: This is an addon for the Booking & Appointment Plugin for WooCommerce which lets you to select multiple time slots on a date for each product on the website.
- * Version: 2.2
+ * Version: 2.3
  * Author: Tyche Softwares
  * Author URI: http://www.tychesoftwares.com/
  * Requires PHP: 5.6
  * WC requires at least: 3.0.0
- * WC tested up to: 3.5.2
+ * WC tested up to: 3.5.7
  */
 
 global $MultipleTimeslotUpdateChecker;
-$MultipleTimeslotUpdateChecker = '2.2';
+$MultipleTimeslotUpdateChecker = '2.3';
 
 // this is the URL our updater / license checker pings. This should be the URL of the site with EDD installed
 define( 'EDD_SL_STORE_URL_MULTIPLE_TIMESLOT_BOOK', 'http://www.tychesoftwares.com/' ); // IMPORTANT: change the name of this constant to something unique to prevent conflicts with other plugins using this system
@@ -32,7 +32,7 @@ $license_key = trim( get_option( 'edd_sample_license_key_multiple_timeslot_book'
 $edd_updater = new EDD_MULTIPLE_TIMESLOT_BOOK_Plugin_Updater( 	EDD_SL_STORE_URL_MULTIPLE_TIMESLOT_BOOK,
 																__FILE__,
 																array(
-																	'version' 	=> '2.2', // current version number
+																	'version' 	=> '2.3', // current version number
 																	'license' 	=> $license_key, // license key
 																	'item_name' => EDD_SL_ITEM_NAME_MULTIPLE_TIMESLOT_BOOK, // name of this plugin
 																	'author' 	=> 'Ashok Rane'  // author of this plugin
