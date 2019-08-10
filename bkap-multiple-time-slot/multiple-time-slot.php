@@ -1159,9 +1159,9 @@ if ( !class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 					foreach ( $time_exploded as $k => $v) {
 						if ( $v != "" ) {
 							$time_explode 	= explode( "-",$v );
-							$from_time 		= date( 'G:i', strtotime( $time_explode[0] ) );
+							$from_time 		= date( 'H:i', strtotime( $time_explode[0] ) );
 							if ( isset( $time_explode[1] ) ) {
-								$to_time = date('G:i', strtotime($time_explode[1]));
+								$to_time = date( 'H:i', strtotime($time_explode[1]));
 							} else {
 								$to_time = '';
 							}
@@ -1170,8 +1170,8 @@ if ( !class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 								$query 	= "SELECT total_booking, available_booking, start_date FROM `".$wpdb->prefix."booking_history`
 											WHERE post_id = '".$product_id."'
 											AND start_date = '".$booking_date."'
-											AND from_time = '".$from_time."'
-											AND to_time = '".$to_time."' ";
+											AND TIME_FORMAT( from_time, '%H:%i' ) = '".$from_time."'
+											AND TIME_FORMAT( to_time, '%H:%i' ) = '".$to_time."' ";
 								$results = $wpdb->get_results( $query );
 							} else {
 								$query = "SELECT total_booking, available_booking, start_date FROM `".$wpdb->prefix."booking_history`
@@ -1213,11 +1213,11 @@ if ( !class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 
 									if ( $results[0]->available_booking > 0 && $results[0]->available_booking < $quantity ) {
 
-										$message = $post_title->post_title.bkap_get_book_t('book.limited-booking-msg1') .$results[0]->available_booking.bkap_get_book_t('book.limited-booking-msg2').$time_slot_to_display.'.';
+										$message = sprintf( __( "%s is available only for %d spot on %s", "woocommerce-booking" ), $post_title->post_title, $results[0]->available_booking, $time_slot_to_display );
 										wc_add_notice( $message, $notice_type = 'error');
 										$quantity_check_pass = 'no';
 									} elseif ( $results[0]->total_booking > 0 && $results[0]->available_booking == 0 ) {
-										$message = bkap_get_book_t('book.no-booking-msg1').$post_title->post_title.bkap_get_book_t('book.no-booking-msg2').$time_slot_to_display.bkap_get_book_t('book.no-booking-msg3');
+										$message = sprintf( __( "Bookings are full for %s on  %s. Please choose some other date and time to continue.", "woocommerce-booking" ), $post_title->post_title, $time_slot_to_display );
 										wc_add_notice( $message, $notice_type = 'error');
 										$quantity_check_pass = 'no';
 									}
