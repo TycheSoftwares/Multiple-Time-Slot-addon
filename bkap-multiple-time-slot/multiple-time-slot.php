@@ -603,6 +603,7 @@ if ( !class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 		function bkap_multiple_time_slot() {
 			
 			$current_date 			= $_POST['current_date'];
+			$current_date_ymd 		= date( "Y-m-d", strtotime( $current_date ) );
 			$post_id 				= $_POST['post_id'];
 			$time_drop_down 		= bkap_booking_process::get_time_slot( $current_date, $post_id );			
 			$time_drop_down_array 	= explode( "|", $time_drop_down );
@@ -624,7 +625,7 @@ if ( !class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 			foreach ( $time_drop_down_array as $k => $v ) {
 				$i++; 
 				if ( $v != "" ) {
-
+					$store_time = sprintf( __( 'Store time is %s %s', 'woocommerce-booking' ), $current_date_ymd, $v );
 					$vexplode = explode( " - ", $v );
     		    	if ( $timezone_check /*&& ( isset( $_POST['bkap_page'] ) && $_POST['bkap_page'] != 'bkap_post' )*/ ) {
     		    		$from_time 	= date( $time_format_to_show, $offset + strtotime( $vexplode[0] ) ) ;
@@ -632,7 +633,7 @@ if ( !class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
         		    	$v = $from_time." - ".$to_time;
     		    	}
 
-					$checkbox .= "<div><label class=\"mul-button\"><input type='checkbox' id='timeslot_".$i."' name='time_slot[]' value='".$v."' onClick='multi_timeslot(this)'><b>".$v. "</b></input><br></label></div>";
+					$checkbox .= "<div title='".$store_time."'><label class=\"mul-button\"><input type='checkbox' id='timeslot_".$i."' name='time_slot[]' value='".$v."' onClick='multi_timeslot(this)'><b>".$v. "</b></input><br></label></div>";
 				}
 			}
 
@@ -1156,15 +1157,21 @@ if ( !class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 				if ( $booking_settings['booking_enable_multiple_time'] == 'multiple' ) {
 					$time_exploded = explode( "<br>",$booking_time_slot );
 					
-					foreach ( $time_exploded as $k => $v) {
+					foreach ( $time_exploded as $k => $v ) {
 						if ( $v != "" ) {
 							$time_explode 	= explode( "-",$v );
-							$from_time 		= date( 'H:i', strtotime( $time_explode[0] ) );
-							if ( isset( $time_explode[1] ) ) {
-								$to_time = date( 'H:i', strtotime($time_explode[1]));
-							} else {
-								$to_time = '';
-							}
+
+							$timezone_check = bkap_timezone_check( $saved_settings );
+                            if ( $timezone_check ) {
+                                $offset      	= bkap_get_offset( $_COOKIE['bkap_offset'] );
+                                $from_time   	= bkap_time_convert_asper_timezone( $time_explode[0], $offset );              
+                                $to_time     	= isset( $time_explode[1] ) ? bkap_time_convert_asper_timezone( $time_explode[1], $offset ) : '';
+                                $booking_date 	= bkap_time_convert_asper_timezone( $booking_date." ".$time_explode[0], $offset, "Y-m-d" );
+                                // Converting booking date to store timezone for getting correct availability
+                            } else {
+                            	$from_time 	= date( 'H:i', strtotime( $time_explode[0] ) );
+								$to_time 	= isset( $time_explode[1] ) ? date( 'H:i', strtotime( $time_explode[1] ) ) : '';
+                            }
 
 							if ( $to_time != '' ) {
 								$query 	= "SELECT total_booking, available_booking, start_date FROM `".$wpdb->prefix."booking_history`
@@ -1182,7 +1189,7 @@ if ( !class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 							}
 							if ( !$results ) break;
 							else {
-								$post_title = get_post($product_id);
+								$post_title = get_post( $product_id );
 								if ( $booking_time_slot != "" ) {
 									// if current format is 12 hour format, then convert the times to 24 hour format to check in database
 									if ( $time_format == '12' ) {
