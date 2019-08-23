@@ -104,12 +104,16 @@ if ( !class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 	     */
 
 		public function bkap_init_hooks() {
-			add_action( 'woocommerce_init', array( $this, 'bkap_load' ) );
+
+			if ( $this->bkap_is_woocommerce_bkap_activated() ) {
+				add_action( 'woocommerce_init', array( $this, 'bkap_load' ) );	
+			} else {
+				add_action( 'admin_notices', array( &$this, 'bkapmts_error_notice' ) );
+			}
+			
 		}
 
 		public function bkap_load() {
-
-			if ( $this->bkap_is_woocommerce_bkap_activated() ) {
 
 				// Initialize settings
 				register_activation_hook( __FILE__, 			array( &$this, 'bkapmts_activate' ) );
@@ -145,10 +149,6 @@ if ( !class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 				add_action( 'woocommerce_before_single_product',array( &$this, 'bkapmts_front_side_scripts_css' ) );
 				add_action( 'wp_head',         					array( &$this, 'bkapmts_scripts' ) );
             	add_action( 'admin_head',         				array( &$this, 'bkapmts_scripts' ) );
-				
-			} else {
-				add_action( 'admin_notices', 					array( &$this, 'bkapmts_error_notice' ) );
-			}
 		}
 
 		/**
@@ -231,12 +231,12 @@ if ( !class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 			$blog_plugins = get_option( 'active_plugins', array() );
 			$site_plugins = get_site_option( 'active_sitewide_plugins', array() );
 			
-			$woocommerce_basename 	= plugin_basename( WC_PLUGIN_FILE );
+			$woocommerce_basename 	= 'woocommerce/woocommerce.php';
 			$bkap_basename 			= 'woocommerce-booking/woocommerce-booking.php';
 
 			$check = false;
 					
-			if ( ( in_array( $woocommerce_basename, $blog_plugins ) || isset( $site_plugins[$woocommerce_basename] ) ) && version_compare( WC_VERSION, '2.2', '>=' ) ) {
+			if ( ( in_array( $woocommerce_basename, $blog_plugins ) || isset( $site_plugins[$woocommerce_basename] ) ) ) {
 				if ( in_array( $bkap_basename, $blog_plugins ) || isset( $site_plugins[$bkap_basename] ) ) {
 					return true;
 				}
