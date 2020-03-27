@@ -640,9 +640,10 @@ if ( !class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 			if ( $timezone_check /*&& ( isset( $_POST['bkap_page'] ) && $_POST['bkap_page'] != 'bkap_post' )*/ ) {
     			date_default_timezone_set( 'UTC' );	
     		}
-
-			echo $checkbox;
-			die();
+			
+			$wp_send_json[ 'bkap_time_count' ] 		= $i;
+			$wp_send_json[ 'bkap_time_dropdown' ] 	= $checkbox;
+			wp_send_json( $wp_send_json );
 		}
 
 		/**
