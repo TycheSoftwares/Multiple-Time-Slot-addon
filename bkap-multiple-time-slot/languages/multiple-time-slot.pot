@@ -1,0 +1,81 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-28 13:46+0530\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: multiple-time-slot.php:312 multiple-time-slot.php:313
+msgid "Activate Multiple Timeslot License"
+msgstr ""
+
+#: multiple-time-slot.php:331
+msgid "Plugin License Options"
+msgstr ""
+
+#: multiple-time-slot.php:340
+msgid "License Key"
+msgstr ""
+
+#: multiple-time-slot.php:344
+msgid "Enter your license key"
+msgstr ""
+
+#: multiple-time-slot.php:350 multiple-time-slot.php:359
+msgid "Activate License"
+msgstr ""
+
+#: multiple-time-slot.php:354
+msgid "active"
+msgstr ""
+
+#: multiple-time-slot.php:356
+msgid "Deactivate License"
+msgstr ""
+
+#: multiple-time-slot.php:421
+msgid "Time Slot Selection:"
+msgstr ""
+
+#: multiple-time-slot.php:439
+msgid "Single&nbsp&nbsp&nbsp&nbsp&nbsp;"
+msgstr ""
+
+#: multiple-time-slot.php:444
+msgid "Multiple"
+msgstr ""
+
+#: multiple-time-slot.php:452
+msgid ""
+"Enable Single to select single timeslot on product page or Enable Multiple "
+"to select multiple timeslots on product page."
+msgstr ""
+
+#: multiple-time-slot.php:633
+#, php-format
+msgid "Store time is %s %s"
+msgstr ""
+
+#: multiple-time-slot.php:1228
+#, php-format
+msgid "%s is available only for %d spot on %s"
+msgstr ""
+
+#: multiple-time-slot.php:1232
+#, php-format
+msgid ""
+"Bookings are full for %s on  %s. Please choose some other date and time to "
+"continue."
+msgstr ""
