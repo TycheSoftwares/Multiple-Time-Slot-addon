@@ -702,6 +702,10 @@ if ( ! class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 		 */
 		public function bkapmts_add_cart_item_data( $cart_arr, $product_id, $variation_id ) {
 
+			if ( isset( $_POST[ 'bkap_multidate_data' ] ) ) {
+				return $cart_arr;
+			}
+
 			$booking_settings = get_post_meta( $product_id, 'woocommerce_booking_settings', true );
 			$time_slots       = '';
 			$product          = wc_get_product( $product_id );
@@ -730,7 +734,8 @@ if ( ! class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 		 * @since 1.0
 		 */
 		public function bkapmts_get_item_data( $other_data, $cart_item ) {
-			if ( isset( $cart_item['bkap_booking'] ) ) :
+
+			if ( isset( $cart_item['bkap_booking'] ) && count( $cart_item['bkap_booking'] ) == 1 ) :
 				foreach ( $cart_item['bkap_booking'] as $booking ) :
 
 					$booking_settings = get_post_meta( $cart_item['product_id'], 'woocommerce_booking_settings', true );
