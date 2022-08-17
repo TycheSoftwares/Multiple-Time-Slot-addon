@@ -394,7 +394,7 @@ if ( ! class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 				$booking_settings = get_post_meta( $product_id, 'woocommerce_booking_settings', true );
 			}
 
-			if ( isset( $booking_settings['booking_enable_time'] ) && 'on' === $booking_settings['booking_enable_time'] ) {
+			if ( isset( $booking_settings['booking_enable_time'] ) && ( 'on' === $booking_settings['booking_enable_time'] || 'dates_time' === $booking_settings['booking_enable_time'] ) ) {
 				if ( isset( $booking_settings['booking_enable_multiple_time'] ) && 'multiple' === $booking_settings['booking_enable_multiple_time'] ) {
 					return 'multiple';
 				}
