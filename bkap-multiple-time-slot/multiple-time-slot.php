@@ -36,6 +36,13 @@ if ( ! class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 		 */
 		public function __construct() {
 
+			add_action( 'before_woocommerce_init', function() {
+				if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
+					$file = __FILE__;
+					\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', $file , true );
+				}
+			} );
+
 			$this->weekdays = array(
 				'booking_weekday_0' => 'Sunday',
 				'booking_weekday_1' => 'Monday',
@@ -170,11 +177,11 @@ if ( ! class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 
 			if ( 'multiple' === self::bkapmts_slot_type( $product_id, $booking_settings ) ) {
 				?>
-				<input 
-					type='hidden' 
-					id='total_multiple_price_calculated' 
-					name='total_multiple_price_calculated' 
-					value='' 
+				<input
+					type='hidden'
+					id='total_multiple_price_calculated'
+					name='total_multiple_price_calculated'
+					value=''
 				>
 				<?php
 			}
@@ -331,12 +338,12 @@ if ( ! class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 			<div class="wrap">
 				<h2><?php esc_html_e( 'Plugin License Options' ); ?></h2>
 				<form method="post" action="options.php">
-				
+
 					<?php settings_fields( 'edd_multiple_timeslot_license' ); ?>
-					
+
 					<table class="form-table">
 						<tbody>
-							<tr valign="top">	
+							<tr valign="top">
 								<th scope="row" valign="top">
 									<?php esc_html_e( 'License Key' ); ?>
 								</th>
@@ -346,7 +353,7 @@ if ( ! class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 								</td>
 							</tr>
 							<?php if ( false !== $license ) { ?>
-								<tr valign="top">	
+								<tr valign="top">
 									<th scope="row" valign="top">
 										<?php esc_html_e( 'Activate License' ); ?>
 									</th>
@@ -365,9 +372,9 @@ if ( ! class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 								</tr>
 							<?php } ?>
 						</tbody>
-					</table>	
+					</table>
 					<?php submit_button(); ?>
-				
+
 				</form>
 			<?php
 		}
@@ -417,13 +424,13 @@ if ( ! class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 			}
 			?>
 			<div id="booking_time_slot">
-				
+
 				<div style="max-width:30%;display:inline-block;">
 					<h4>
 						<label for="booking_time_slot_label"><?php esc_html_e( 'Time Slot Selection:', 'multiple-time-slot' ); ?></label>
 					</h4>
 				</div>
-				
+
 				<div style="max-width:60%;display:inline-block;margin-left:10%;">
 					<?php
 					$enable_time = '';
@@ -458,7 +465,7 @@ if ( ! class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 			<script type="text/javascript">
 				jQuery( "#booking_enable_time").change( function() {
 					if( jQuery( '#booking_enable_time' ).attr( 'checked' ) ) {
-						jQuery( '#booking_time_slot' ).show();								
+						jQuery( '#booking_time_slot' ).show();
 					} else {
 						jQuery('#booking_time_slot').hide();
 					}
@@ -686,7 +693,7 @@ if ( ! class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 						jQuery( ".single_add_to_cart_button" ).hide();
 						jQuery( ".quantity" ).hide()
 					}
-				}		
+				}
 			</script>
 			<?php
 		}
@@ -879,7 +886,7 @@ if ( ! class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 
 							if ( $to_time != '' ) {
 								$time_slot_to_display .= $from_time . ' - ' . $to_time . ',';
-							} else {	
+							} else {
 								$time_slot_to_display .= $from_time . ',';
 							}
 
@@ -1093,7 +1100,7 @@ if ( ! class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 													$query = "SELECT * FROM `" . $wpdb->prefix . "booking_history`
 																WHERE post_id = '" . $v . "'
 																AND weekday = '" . $weekday . "'
-																AND to_time = '' 
+																AND to_time = ''
 																AND start_date = '0000-00-00'";
 													$results = $wpdb->get_results( $query );
 
@@ -1172,7 +1179,7 @@ if ( ! class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 							$timezone_check = bkap_timezone_check( $saved_settings );
 							if ( $timezone_check ) {
 								$offset       = bkap_get_offset( $_COOKIE['bkap_offset'] );
-								$from_time    = bkap_time_convert_asper_timezone( $time_explode[0], $offset );              
+								$from_time    = bkap_time_convert_asper_timezone( $time_explode[0], $offset );
 								$to_time      = isset( $time_explode[1] ) ? bkap_time_convert_asper_timezone( $time_explode[1], $offset ) : '';
 								$booking_date = bkap_time_convert_asper_timezone( $booking_date . ' ' . $time_explode[0], $offset, 'Y-m-d' );
 								// Converting booking date to store timezone for getting correct availability.
@@ -1345,19 +1352,19 @@ if ( ! class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 							if ( $to_time != '' ) {
 								$query = "UPDATE `" . $wpdb->prefix . "booking_history`
 											SET available_booking = available_booking + " . $quantity . "
-											WHERE 
+											WHERE
 											id = '" . $booking_id . "' AND
 											start_date = '" . $start_date . "' AND
 											from_time = '" . $from_time . "' AND
-											to_time = '" . $to_time . "' AND 
+											to_time = '" . $to_time . "' AND
 											post_id = '" . $product_id . "'";
 							} else {
 								$query = "UPDATE `" . $wpdb->prefix . "booking_history`
 											SET available_booking = available_booking + " . $quantity . "
-											WHERE 
+											WHERE
 											id = '" . $booking_id . "' AND
 											start_date = '" . $start_date . "' AND
-											from_time = '" . $from_time . "' AND 
+											from_time = '" . $from_time . "' AND
 											post_id = '" . $product_id . "'";
 							}
 							$wpdb->query( $query );
