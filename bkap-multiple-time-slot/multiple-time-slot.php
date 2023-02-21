@@ -69,7 +69,7 @@ if ( ! class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 			 *
 			 * IMPORTANT: change the name of this constant to something unique to prevent conflicts with other plugins using this system
 			 */
-			define( 'EDD_SL_STORE_URL_MULTIPLE_TIMESLOT_BOOK', 'http://www.tychesoftwares.com/' );
+			define( 'EDD_SL_STORE_URL_MULTIPLE_TIMESLOT_BOOK', 'https://www.tychesoftwares.com/' );
 
 			/**
 			 * The name of your product. This is the title of your product in EDD and should match the download title in EDD exactly
