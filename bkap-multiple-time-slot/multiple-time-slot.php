@@ -43,15 +43,6 @@ if ( ! class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 				}
 			} );
 
-			$this->weekdays = array(
-				'booking_weekday_0' => 'Sunday',
-				'booking_weekday_1' => 'Monday',
-				'booking_weekday_2' => 'Tuesday',
-				'booking_weekday_3' => 'Wednesday',
-				'booking_weekday_4' => 'Thursday',
-				'booking_weekday_5' => 'Friday',
-				'booking_weekday_6' => 'Saturday',
-			);
 			$this->bkap_multiple_time_slots_define_constants(); // Defining Constants.
 			$this->bkap_multiple_time_slots_edd_plugin_updater(); // Plugin Updater.
 			$this->bkap_init_hooks(); // Plujgin Hooks.
@@ -970,7 +961,7 @@ if ( ! class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 
 					if ( $lockout_settings == '' ) {
 						$week_day         = date( 'l', strtotime( $hidden_date ) );
-						$weekday          = array_search( $week_day, $this->weekdays );
+						$weekday          = array_search( $week_day, bkap_weekdays() );
 						$lockout_settings = $booking_settings['booking_time_settings'][ $weekday ];
 					}
 
@@ -1034,7 +1025,7 @@ if ( ! class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 												if ( $updated == 0 ) {
 													if ( $v_val->weekday == '' ) {
 														$week_day = date( 'l', strtotime( $date_query ) );
-														$weekday  = array_search( $week_day, $this->weekdays );
+														$weekday  = array_search( $week_day, bkap_weekdays() );
 													} else {
 														$weekday = $v_val->weekday;
 													}
@@ -1092,7 +1083,7 @@ if ( ! class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 
 													if ( $v_val->weekday == '' ) {
 														$week_day = date( 'l',strtotime( $date_query ) );
-														$weekday  = array_search( $week_day, $this->weekdays );
+														$weekday  = array_search( $week_day, bkap_weekdays() );
 													} else {
 														$weekday = $v_val->weekday;
 													}
