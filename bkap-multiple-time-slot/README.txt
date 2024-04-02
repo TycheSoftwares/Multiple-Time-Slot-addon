@@ -3,8 +3,8 @@ Contributors: tychesoftwares
 Donate link: http://www.tychesoftwares.com/
 Tags: multiple timeslot, multiple timeslot integration
 Requires at least: 3.0.1
-Tested up to: 6.1
-Stable tag: 2.7
+Tested up to: 6.5
+Stable tag: 2.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,5 +23,8 @@ This is an addon for the Booking & Appointment Plugin for WooCommerce which lets
 
 == Changelog ==
 
-= 2.7.0 =
+= 2.7 =
+* BKAP v6.0.0 compatiblity
+
+= 2.7 =
 * HPOS Compatibility.

@@ -3,12 +3,12 @@
  * Plugin Name: Multiple Time Slot Addon
  * Plugin URI: https://www.tychesoftwares.com/store/premium-plugins/multiple-time-slot-addon-woocommerce-booking-appointment-plugin/
  * Description: This is an addon for the Booking & Appointment Plugin for WooCommerce which lets you to select multiple time slots on a date for each product on the website.
- * Version: 2.7
+ * Version: 2.8
  * Author: Tyche Softwares
  * Author URI: http://www.tychesoftwares.com/
- * Requires PHP: 5.6
+ * Requires PHP: 7.3
  * WC requires at least: 3.0.0
- * WC tested up to: 6.1
+ * WC tested up to: 8.7.0
  *
  * @package BKAP/Multiple-Timeslot
  */
@@ -69,7 +69,7 @@ if ( ! class_exists( 'Bkap_Multiple_Time_Slots' ) ) {
 			 */
 			define( 'EDD_SL_ITEM_NAME_MULTIPLE_TIMESLOT_BOOK', 'Multiple Time Slot addon for Woocommerce Booking and Appointment Plugin' );
 
-			define( 'BKAPMTS_VERSION', '2.7' );
+			define( 'BKAPMTS_VERSION', '2.8' );
 		}
 
 		/**
