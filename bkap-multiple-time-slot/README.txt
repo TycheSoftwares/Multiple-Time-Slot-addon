@@ -23,7 +23,7 @@ This is an addon for the Booking & Appointment Plugin for WooCommerce which lets
 
 == Changelog ==
 
-= 2.7 =
+= 2.8 =
 * BKAP v6.0.0 compatiblity
 
 = 2.7 =
